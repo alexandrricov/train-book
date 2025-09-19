@@ -7,4 +7,5 @@ export default defineConfig({
   server: {
     port: 5177,
   },
+  base: "/train-book/",
 });
