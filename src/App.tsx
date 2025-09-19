@@ -11,10 +11,10 @@ function AppFirebase() {
     <>
       <header className="flex items-center justify-between p-4 border-b">
         <Logo className="h-10 w-auto" />
-        <h1 className="text-2xl font-bold">TrainBook</h1>
         <GoogleLoginButton />
       </header>
       <main className="container mx-auto px-4">
+        <h1 className="text-2xl font-bold">TrainBook</h1>
         {user && (
           <>
             <AddSection />
