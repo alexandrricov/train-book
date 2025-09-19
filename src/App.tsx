@@ -2,6 +2,7 @@ import GoogleLoginButton from "./components/login-button";
 import { AddSection } from "./sections/add-section";
 import { useAuth } from "./providers/auth";
 import { ListSection } from "./sections/list-section";
+import { Logo } from "./components/logo";
 
 function AppFirebase() {
   const { user } = useAuth();
@@ -9,6 +10,7 @@ function AppFirebase() {
   return (
     <>
       <header className="flex items-center justify-between p-4 border-b">
+        <Logo className="h-10 w-auto" />
         <h1 className="text-2xl font-bold">TrainBook</h1>
         <GoogleLoginButton />
       </header>

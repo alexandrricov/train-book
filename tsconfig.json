@@ -10,7 +10,7 @@
     "skipLibCheck": true,
     "strict": true,
     "target": "ES2020",
-    "types": ["vite/client"],
+    "types": ["vite/client", "vite-plugin-pwa/client"],
     "useDefineForClassFields": true
   },
   "include": ["src"]

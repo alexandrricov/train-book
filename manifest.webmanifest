@@ -1,13 +1,13 @@
 {
-  "name": "Тренировки (локально)",
-  "short_name": "Тренировки",
+  "name": "TrainBook – log your workouts",
+  "short_name": "TrainBook",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#111827",
   "theme_color": "#111827",
-  "description": "Локальный трекер тренировок (IndexedDB)",
+  "description": "A simple app to log your workouts using IndexedDB.",
   "icons": [
-    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png" }
+    { "src": "icons/192x192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/512x512.png", "sizes": "512x512", "type": "image/png" }
   ]
 }
