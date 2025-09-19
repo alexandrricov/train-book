@@ -5,7 +5,7 @@
   "background_color": "#111827",
   "theme_color": "#111827",
   "description": "A simple app to log your workouts and track your progress over time.",
-  "start_url": "/",
+  "start_url": "/train-book/",
   "icons": [
     { "src": "icons/192x192.png", "sizes": "192x192", "type": "image/png" },
     { "src": "icons/512x512.png", "sizes": "512x512", "type": "image/png" }
