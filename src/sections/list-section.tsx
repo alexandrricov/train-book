@@ -1,0 +1,67 @@
+import { useEffect, useMemo, useState } from "react";
+import { ExerciseType, SetRow } from "../types";
+import { subscribeMyItems } from "../firebase-db";
+import { EXERCISE_LABELS } from "../exercises";
+
+export function ListSection() {
+  const [items, setItems] = useState<SetRow[]>([]);
+
+  useEffect(() => {
+    const unsubItems = subscribeMyItems(setItems);
+
+    return () => {
+      unsubItems();
+    };
+  }, []);
+
+  const groupedItems = items.reduce((acc, item) => {
+    if (!acc[item.date])
+      acc[item.date] = {} as Record<ExerciseType, SetRow["count"][]>;
+    if (!acc[item.date][item.type]) acc[item.date][item.type] = [];
+    acc[item.date][item.type].push(item.count);
+    return acc;
+  }, {} as Record<string, Record<ExerciseType, SetRow["count"][]>>);
+
+  // every day from today to smallest date
+  const days = useMemo(() => {
+    if (items.length === 0) return [];
+    const dateStrings = Object.keys(groupedItems);
+    const minDate = dateStrings.reduce(
+      (min, d) => (d < min ? d : min),
+      dateStrings[0]
+    );
+    const today = new Date();
+    const min = new Date(minDate);
+    const result: string[] = [];
+    for (let d = new Date(today); d >= min; d.setDate(d.getDate() - 1)) {
+      const iso = d.toISOString().slice(0, 10);
+      result.push(iso);
+    }
+    return result;
+  }, [items]);
+
+  if (items.length === 0) return <div>No items yet</div>;
+
+  return (
+    <section className="mt-10">
+      <h2 className="text-xl font-bold mb-4">My Exercises</h2>
+      {days.length === 0 && <div>No items yet</div>}
+      {days.map((d) => (
+        <div key={d} className="mb-6">
+          <h3 className="text-lg font-semibold mb-2">{d}</h3>
+          {groupedItems[d] ? (
+            <ul className="list-disc pl-5">
+              {Object.entries(groupedItems[d]).map(([type, counts]) => (
+                <li key={type}>
+                  {EXERCISE_LABELS[type] ?? type}: {counts.join(", ")}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <div>No exercises logged</div>
+          )}
+        </div>
+      ))}
+    </section>
+  );
+}
