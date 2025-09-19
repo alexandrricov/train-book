@@ -28,12 +28,19 @@ export default function GoogleLoginButton() {
   const logout = async () => signOut(auth);
 
   if (loading) return <div>Loading...</div>;
-
+  console.log("user in login button", user);
   return (
     <div className="flex items-center gap-2">
       {user ? (
         <>
-          <span>{user?.email}</span>
+          {/* <span>{user?.email}</span> */}
+          {user?.photoURL && (
+            <img
+              src={user.photoURL}
+              alt={user.displayName ?? "User Avatar"}
+              className="size-10 rounded-full"
+            />
+          )}
           <button
             onClick={logout}
             className="rounded-xl px-4 py-2 border hover:bg-gray-50"
@@ -46,7 +53,7 @@ export default function GoogleLoginButton() {
           onClick={login}
           className="rounded-xl px-4 py-2 bg-black text-white hover:opacity-90"
         >
-          Login with Google
+          Login
         </button>
       )}
     </div>
