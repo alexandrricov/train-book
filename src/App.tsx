@@ -5,21 +5,27 @@ import { ListSection } from "./sections/list-section";
 import { Logo } from "./components/logo";
 
 function AppFirebase() {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
 
   return (
     <>
-      <header className="flex items-center justify-between p-4 border-b">
+      <header className="flex items-center justify-between p-4 border-b mb-6">
         <Logo className="h-10 w-auto" />
         <GoogleLoginButton />
       </header>
       <main className="container mx-auto px-4">
-        <h1 className="text-2xl font-bold">TrainBook</h1>
-        {user && (
+        {user ? (
           <>
             <AddSection />
             <ListSection />
           </>
+        ) : loading ? (
+          <div className="text-center">Loading...</div>
+        ) : (
+          <div className="text-center">
+            <h2 className="text-2xl font-bold mb-4">Welcome to TrainBook</h2>
+            <p>Please log in to start tracking your workouts.</p>
+          </div>
         )}
       </main>
       <footer className="w-full mx-auto p-4 text-xs text-gray-500">

@@ -22,7 +22,7 @@ export function AddSection() {
   const [date, setDate] = useState<string>(toLocalDateString());
 
   return (
-    <section className="p-4 rounded-2xl shadow-sm border">
+    <section className="p-4 rounded-2xl shadow-sm border mb-6">
       <h2 className="text-lg font-semibold mb-3">Add set</h2>
       <form
         className="grid grid-cols-1 sm:grid-cols-4 gap-3 items-end"
