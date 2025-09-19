@@ -1,28 +1,16 @@
-# IndexedDB Training App (RU)
+# Training Tracker
 
-Трекер тренировок без бэкенда: хранит данные локально в IndexedDB, показывает сводку за сегодня и список по предыдущим дням.
+A simple app to help you track your training sessions, monitor progress, and achieve your fitness goals.
 
-## Запуск
+## Features
 
-```bash
-npm i
-npm run dev
-```
+- Log exercises
+- View training history
 
-Открой `http://localhost:5173`.
+## Contributing
 
-## Где лежат данные
+Contributions are welcome! Please open an issue or submit a pull request.
 
-- В браузере, в базе **IndexedDB** (`training-db`, хранилище `sets`).
-- Очистка локальных данных/кеша в браузере удалит записи.
+## License
 
-## Структура записи
-
-```ts
-type SetRow = {
-  id: string;
-  date: string; // YYYY-MM-DD (локальная дата)
-  type: string; // 'pushup' | 'pullup' | 'squat' | 'abs'
-  count: number;
-};
-```
+This project is licensed under the MIT License.
