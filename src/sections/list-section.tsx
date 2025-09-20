@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { ExerciseType, SetRow } from "../types";
+import { type ExerciseType, type SetRow } from "../types";
 import { subscribeMyItems } from "../firebase-db";
 import { EXERCISE_LABELS } from "../exercises";
 

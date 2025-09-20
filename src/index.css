@@ -1,16 +1,17 @@
 @import "tailwindcss";
 
-html,
-body,
-#root {
-  height: 100%;
-}
-body {
-  /* @apply bg-gray-50 text-gray-900; */
-}
-
 :root {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+
   color-scheme: light dark;
 
-  font-family: system-ui, sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  min-width: 320px;
+  min-height: 100vh;
 }

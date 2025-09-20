@@ -28,7 +28,7 @@ export default function GoogleLoginButton() {
   const logout = async () => signOut(auth);
 
   if (loading) return <div>Loading...</div>;
-  console.log("user in login button", user);
+
   return (
     <div className="flex items-center gap-2">
       {user ? (

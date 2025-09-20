@@ -2,7 +2,7 @@ import {
   collection,
   addDoc,
   doc,
-  setDoc,
+  // setDoc,
   getDocs,
   query,
   orderBy,
@@ -12,7 +12,7 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { auth, db } from "./firebase";
-import { SetRow } from "./types";
+import { type SetRow } from "./types";
 
 export async function createItemForCurrentUser(payload: SetRow) {
   const uid = auth.currentUser?.uid;
@@ -48,6 +48,7 @@ export function subscribeMyItems(cb: (items: SetRow[]) => void) {
   });
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function updateMyItem(itemId: string, patch: Record<string, any>) {
   const uid = auth.currentUser?.uid;
   if (!uid) throw new Error("Not authenticated");

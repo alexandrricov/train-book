@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { createItemForCurrentUser } from "../firebase-db";
-import { SetRow } from "../types";
+import { type SetRow } from "../types";
 import { EXERCISE_LABELS, EXERCISE_ORDER } from "../exercises";
 
-export function toLocalDateString(d = new Date()) {
+function toLocalDateString(d = new Date()) {
   const y = d.getFullYear();
   const m = String(d.getMonth() + 1).padStart(2, "0");
   const day = String(d.getDate()).padStart(2, "0");
