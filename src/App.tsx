@@ -3,6 +3,7 @@ import { AddSection } from "./sections/add-section";
 import { useAuth } from "./providers/auth";
 import { ListSection } from "./sections/list-section";
 import { Logo } from "./components/logo";
+import { exportMyItemsToJSON, importMyItemsFromJSON } from "./firebase-db";
 
 function AppFirebase() {
   const { user, loading } = useAuth();
@@ -18,6 +19,29 @@ function AppFirebase() {
           <>
             <AddSection />
             <ListSection />
+            <div className="flex items-center gap-2 mt-6">
+              <button onClick={() => exportMyItemsToJSON()}>
+                Export Items
+              </button>
+              <label>
+                Import Items
+                <input
+                  type="file"
+                  name="import"
+                  className="sr-only"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      importMyItemsFromJSON(file, {
+                        mode: "append",
+                        preserveIds: true,
+                        reassignCreatedAt: false,
+                      });
+                    }
+                  }}
+                />
+              </label>
+            </div>
           </>
         ) : loading ? (
           <div className="text-center">Loading...</div>

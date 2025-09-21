@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { type ExerciseType, type SetRow } from "../types";
 import { subscribeMyItems } from "../firebase-db";
-import { EXERCISE_LABELS } from "../exercises";
+import { EXERCISE_LABELS, EXERCISE_ORDER } from "../exercises";
 
 export function ListSection() {
   const [items, setItems] = useState<SetRow[]>([]);
@@ -51,11 +51,18 @@ export function ListSection() {
           <h3 className="text-lg font-semibold mb-2">{d}</h3>
           {groupedItems[d] ? (
             <ul className="list-disc pl-5">
-              {Object.entries(groupedItems[d]).map(([type, counts]) => (
-                <li key={type}>
-                  {EXERCISE_LABELS[type] ?? type}: {counts.join(", ")}
-                </li>
-              ))}
+              {Object.entries(groupedItems[d])
+                .sort(([a], [b]) => {
+                  const orderA = EXERCISE_ORDER.indexOf(a);
+                  const orderB = EXERCISE_ORDER.indexOf(b);
+                  return orderA - orderB;
+                })
+                .map(([type, counts]) => (
+                  <li key={type}>
+                    {EXERCISE_LABELS[type] ?? type}: {counts.join(", ")} ={" "}
+                    {counts.reduce((a, b) => a + b, 0)}
+                  </li>
+                ))}
             </ul>
           ) : (
             <div>No exercises logged</div>
