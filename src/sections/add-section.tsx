@@ -71,7 +71,7 @@ export function AddSection() {
           Count
           <input
             type="number"
-            className="mt-1 w-full border rounded-xl p-2"
+            className="mt-1 w-full border rounded-xl p-2 text-[16px]"
             value={count || ""}
             onChange={(e) => setCount(Number(e.target.value))}
             min={1}

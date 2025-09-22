@@ -4,6 +4,7 @@ import { useAuth } from "./providers/auth";
 import { ListSection } from "./sections/list-section";
 import { Logo } from "./components/logo";
 import { exportMyItemsToJSON, importMyItemsFromJSON } from "./firebase-db";
+import { ChartSection } from "./sections/chart-section";
 
 function AppFirebase() {
   const { user, loading } = useAuth();
@@ -18,6 +19,7 @@ function AppFirebase() {
         {user ? (
           <>
             <AddSection />
+            <ChartSection />
             <ListSection />
             <div className="flex items-center gap-2 mt-6">
               <button onClick={() => exportMyItemsToJSON()}>
