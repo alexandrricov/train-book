@@ -1,16 +1,18 @@
+import { NavLink, Outlet } from "react-router";
 import GoogleLoginButton from "./components/login-button";
 import { useAuth } from "./providers/auth";
 import { Logo } from "./components/logo";
-import { NavLink, Outlet } from "react-router";
 
 function App() {
   const { user, loading } = useAuth();
 
   return (
     <>
-      <header className="flex items-center justify-between p-4 border-b mb-6">
-        <Logo className="h-10 w-auto" />
-        <nav className="max-md:h-10 max-md:fixed max-md:bottom-0 max-md:left-0 max-md:right-0 max-md:border-t max-md:px-4 max-md:py-2 flex items-center justify-between w-full md:w-auto max-md:z-10 max-md:bg-white">
+      <header className="flex items-center justify-between p-4 border-b mb-6 sticky top-0 bg-white z-10">
+        <NavLink to="/" className="flex items-center">
+          <Logo className="h-10 w-auto" />
+        </NavLink>
+        <nav className="max-sm:h-10 max-sm:fixed max-sm:bottom-0 max-sm:left-0 max-sm:right-0 max-sm:border-t max-sm:px-4 max-sm:py-2 flex items-center justify-between w-full sm:w-auto max-sm:z-10 max-sm:bg-white">
           <ul className="flex space-x-4">
             <li>
               <NavLink to="/">Home</NavLink>
@@ -39,7 +41,7 @@ function App() {
           </div>
         )}
       </main>
-      <footer className="w-full mx-auto p-4 text-xs text-gray-500 max-md:mb-10">
+      <footer className="w-full mx-auto p-4 text-xs text-gray-500 max-sm:mb-10">
         <p>Copyright &copy; 2025</p>
         <p>Open source, from Alexandr Rîcov with ❤️</p>
       </footer>

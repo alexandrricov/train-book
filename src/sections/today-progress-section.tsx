@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { subscribeTodayItems } from "../firebase-db";
 import type { ExerciseType, SetRow } from "../types";
-import { EXERCISE_ORDER } from "../exercises";
+import { EXERCISE, EXERCISE_ORDER } from "../exercises";
 
 export function TodayProgress() {
   const [items, setItems] = useState<SetRow[]>([]);
@@ -37,8 +37,11 @@ export function TodayProgress() {
             })
             .map(([type, counts]) => (
               <li key={type}>
-                <span className="font-medium">{type}</span>: {counts.join(", ")}{" "}
-                (Total: {counts.reduce((a, b) => a + b, 0)})
+                <span className="font-medium">
+                  {EXERCISE[type as ExerciseType].label}
+                </span>
+                : {counts.join(", ")} (Total:{" "}
+                {counts.reduce((a, b) => a + b, 0)})
               </li>
             ))}
         </ul>
