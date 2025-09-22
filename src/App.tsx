@@ -1,49 +1,34 @@
 import GoogleLoginButton from "./components/login-button";
-import { AddSection } from "./sections/add-section";
 import { useAuth } from "./providers/auth";
-import { ListSection } from "./sections/list-section";
 import { Logo } from "./components/logo";
-import { exportMyItemsToJSON, importMyItemsFromJSON } from "./firebase-db";
-import { ChartSection } from "./sections/chart-section";
+import { NavLink, Outlet } from "react-router";
 
-function AppFirebase() {
+function App() {
   const { user, loading } = useAuth();
 
   return (
     <>
       <header className="flex items-center justify-between p-4 border-b mb-6">
         <Logo className="h-10 w-auto" />
+        <nav className="max-md:h-10 max-md:fixed max-md:bottom-0 max-md:left-0 max-md:right-0 max-md:bg-white max-md:border-t max-md:px-4 max-md:py-2 flex items-center justify-between w-full md:w-auto">
+          <ul className="flex space-x-4">
+            <li>
+              <NavLink to="/">Home</NavLink>
+            </li>
+            <li>
+              <NavLink to="/history">History</NavLink>
+            </li>
+            <li>
+              <NavLink to="/settings">Settings</NavLink>
+            </li>
+          </ul>
+        </nav>
         <GoogleLoginButton />
       </header>
       <main className="container mx-auto px-4">
         {user ? (
           <>
-            <AddSection />
-            <ChartSection />
-            <ListSection />
-            <div className="flex items-center gap-2 mt-6">
-              <button onClick={() => exportMyItemsToJSON()}>
-                Export Items
-              </button>
-              <label>
-                Import Items
-                <input
-                  type="file"
-                  name="import"
-                  className="sr-only"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (file) {
-                      importMyItemsFromJSON(file, {
-                        mode: "append",
-                        preserveIds: true,
-                        reassignCreatedAt: false,
-                      });
-                    }
-                  }}
-                />
-              </label>
-            </div>
+            <Outlet />
           </>
         ) : loading ? (
           <div className="text-center">Loading...</div>
@@ -54,7 +39,7 @@ function AppFirebase() {
           </div>
         )}
       </main>
-      <footer className="w-full mx-auto p-4 text-xs text-gray-500">
+      <footer className="w-full mx-auto p-4 text-xs text-gray-500 max-md:mb-10">
         <p>Copyright &copy; 2025</p>
         <p>Open source, from Alexandr Rîcov with ❤️</p>
       </footer>
@@ -62,4 +47,4 @@ function AppFirebase() {
   );
 }
 
-export default AppFirebase;
+export default App;

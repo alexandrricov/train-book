@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { type ExerciseType, type SetRow } from "../types";
 import { subscribeMyItems } from "../firebase-db";
-import { EXERCISE_LABELS, EXERCISE_ORDER } from "../exercises";
+import { EXERCISE, EXERCISE_ORDER } from "../exercises";
 
-export function ListSection() {
+export function History() {
   const [items, setItems] = useState<SetRow[]>([]);
 
   useEffect(() => {
@@ -45,8 +45,8 @@ export function ListSection() {
   if (items.length === 0) return <div>No items yet</div>;
 
   return (
-    <section className="mt-10">
-      <h2 className="text-xl font-bold mb-4">My Exercises</h2>
+    <section>
+      <h1 className="text-xl font-bold mb-4">History log</h1>
       {days.length === 0 && <div>No items yet</div>}
       {days.map((d) => (
         <div key={d} className="mb-6">
@@ -61,7 +61,7 @@ export function ListSection() {
                 })
                 .map(([type, counts]) => (
                   <li key={type}>
-                    {EXERCISE_LABELS[type as ExerciseType] ?? type}:{" "}
+                    {EXERCISE[type as ExerciseType].label ?? type}:{" "}
                     {counts.join(", ")} = {counts.reduce((a, b) => a + b, 0)}
                   </li>
                 ))}

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { createItemForCurrentUser } from "../firebase-db";
 import { type SetRow } from "../types";
-import { EXERCISE_LABELS, EXERCISE_ORDER } from "../exercises";
+import { EXERCISE, EXERCISE_ORDER } from "../exercises";
 
 function toLocalDateString(d = new Date()) {
   const y = d.getFullYear();
@@ -43,11 +43,11 @@ export function AddSection() {
             .finally(() => setLoading(false));
         }}
       >
-        <label className="text-sm">
+        <label className="text-sm flex flex-col">
           Date
           <input
             type="date"
-            className="mt-1 w-full border rounded-xl p-2 min-w-0"
+            className="mt-1 border rounded-xl p-2 min-w-0 box-border grow"
             value={date}
             onChange={(e) => setDate(e.target.value)}
           />
@@ -62,7 +62,7 @@ export function AddSection() {
           >
             {DEFAULT_EXERCISES.map((key) => (
               <option key={key} value={key}>
-                {EXERCISE_LABELS[key] ?? key}
+                {EXERCISE[key].label}
               </option>
             ))}
           </select>

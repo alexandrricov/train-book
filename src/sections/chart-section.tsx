@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import type { SetRow, SetRowDB } from "../types";
 import { subscribeMyItems } from "../firebase-db";
-import { EXERCISE_LABELS } from "../exercises";
+import { type ExerciseType } from "../exercises";
 import { Timestamp } from "firebase/firestore";
 import {
   CartesianGrid,
@@ -179,8 +179,6 @@ function dateToYMDUTC(d: Date): string {
   return `${y}-${m}-${dd}`;
 }
 
-type ExerciseType = keyof typeof EXERCISE_LABELS;
-
 export type DailyTotals = {
   date: string; // "YYYY-MM-DD"
 } & Partial<Record<ExerciseType, number>>;
@@ -223,10 +221,7 @@ export function ChartSection() {
     const endDate = ymdToUTCDate(endYMD);
 
     // Map<DateKey, Map<Type, Sum>>
-    const byDate: Map<
-      string,
-      Map<keyof typeof EXERCISE_LABELS, number>
-    > = new Map();
+    const byDate: Map<string, Map<ExerciseType, number>> = new Map();
 
     for (
       let d = new Date(startDate.getTime());
@@ -299,13 +294,18 @@ export function ChartSection() {
               dataKey="date"
               tickFormatter={(item) => formatTick(item, periodFilter)}
             />
-            <YAxis />
+            <YAxis
+              width={20}
+              domain={[
+                (dataMin) => Math.max(0 - Math.abs(dataMin), 0),
+                (dataMax) => dataMax + 10,
+              ]}
+            />
             <Tooltip />
             <Line
               type="monotone"
               dataKey="pushup"
               stroke={EXERCISE_COLORS.pushup}
-              activeDot={{ r: 8 }}
               connectNulls
             />
             <Line
