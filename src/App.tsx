@@ -10,7 +10,7 @@ function App() {
     <>
       <header className="flex items-center justify-between p-4 border-b mb-6">
         <Logo className="h-10 w-auto" />
-        <nav className="max-md:h-10 max-md:fixed max-md:bottom-0 max-md:left-0 max-md:right-0 max-md:bg-white max-md:border-t max-md:px-4 max-md:py-2 flex items-center justify-between w-full md:w-auto">
+        <nav className="max-md:h-10 max-md:fixed max-md:bottom-0 max-md:left-0 max-md:right-0 max-md:border-t max-md:px-4 max-md:py-2 flex items-center justify-between w-full md:w-auto max-md:z-10 max-md:bg-white">
           <ul className="flex space-x-4">
             <li>
               <NavLink to="/">Home</NavLink>
