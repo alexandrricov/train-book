@@ -14,13 +14,15 @@ export function ListSection() {
     };
   }, []);
 
-  const groupedItems = items.reduce((acc, item) => {
-    if (!acc[item.date])
-      acc[item.date] = {} as Record<ExerciseType, SetRow["count"][]>;
-    if (!acc[item.date][item.type]) acc[item.date][item.type] = [];
-    acc[item.date][item.type].push(item.count);
-    return acc;
-  }, {} as Record<string, Record<ExerciseType, SetRow["count"][]>>);
+  const groupedItems = useMemo(() => {
+    return items.reduce((acc, item) => {
+      if (!acc[item.date])
+        acc[item.date] = {} as Record<ExerciseType, SetRow["count"][]>;
+      if (!acc[item.date][item.type]) acc[item.date][item.type] = [];
+      acc[item.date][item.type].push(item.count);
+      return acc;
+    }, {} as Record<string, Record<ExerciseType, SetRow["count"][]>>);
+  }, [items]);
 
   // every day from today to smallest date
   const days = useMemo(() => {
@@ -38,7 +40,7 @@ export function ListSection() {
       result.push(iso);
     }
     return result;
-  }, [items]);
+  }, [items, groupedItems]);
 
   if (items.length === 0) return <div>No items yet</div>;
 
@@ -53,14 +55,14 @@ export function ListSection() {
             <ul className="list-disc pl-5">
               {Object.entries(groupedItems[d])
                 .sort(([a], [b]) => {
-                  const orderA = EXERCISE_ORDER.indexOf(a);
-                  const orderB = EXERCISE_ORDER.indexOf(b);
+                  const orderA = EXERCISE_ORDER.indexOf(a as ExerciseType);
+                  const orderB = EXERCISE_ORDER.indexOf(b as ExerciseType);
                   return orderA - orderB;
                 })
                 .map(([type, counts]) => (
                   <li key={type}>
-                    {EXERCISE_LABELS[type] ?? type}: {counts.join(", ")} ={" "}
-                    {counts.reduce((a, b) => a + b, 0)}
+                    {EXERCISE_LABELS[type as ExerciseType] ?? type}:{" "}
+                    {counts.join(", ")} = {counts.reduce((a, b) => a + b, 0)}
                   </li>
                 ))}
             </ul>

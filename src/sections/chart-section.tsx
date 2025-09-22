@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import type { SetRow, SetRowDB } from "../types";
 import { subscribeMyItems } from "../firebase-db";
-import { EXERCISE_ORDER, EXERCISE_LABELS } from "../exercises";
+import { EXERCISE_LABELS } from "../exercises";
 import { Timestamp } from "firebase/firestore";
 import {
   CartesianGrid,
@@ -14,26 +14,26 @@ import {
   YAxis,
 } from "recharts";
 
-function formatDateTime(
-  date: Date | number | string,
-  options: Intl.DateTimeFormatOptions = {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-  }
-): string {
-  if (!date) return "";
-  if (typeof date === "number" || typeof date === "string") {
-    date = new Date(date);
-  }
+// function formatDateTime(
+//   date: Date | number | string,
+//   options: Intl.DateTimeFormatOptions = {
+//     year: "numeric",
+//     month: "2-digit",
+//     day: "2-digit",
+//     hour: "2-digit",
+//     minute: "2-digit",
+//   }
+// ): string {
+//   if (!date) return "";
+//   if (typeof date === "number" || typeof date === "string") {
+//     date = new Date(date);
+//   }
 
-  return date.toLocaleString(
-    navigator.language ?? navigator.languages,
-    options
-  );
-}
+//   return date.toLocaleString(
+//     navigator.language ?? navigator.languages,
+//     options
+//   );
+// }
 
 function formatDate(
   date: Date | number | string,
@@ -116,12 +116,17 @@ function tsLikeToDate(v: unknown): Date | null {
   if (
     v &&
     typeof v === "object" &&
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     "seconds" in (v as any) &&
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     typeof (v as any).seconds === "number"
   ) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const secs = (v as any).seconds as number;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const nanos = (v as any).nanoseconds
-      ? ((v as any).nanoseconds as number)
+      ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        ((v as any).nanoseconds as number)
       : 0;
     return new Date(secs * 1000 + Math.floor(nanos / 1e6));
   }
