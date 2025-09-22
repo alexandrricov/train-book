@@ -1,6 +1,7 @@
 import type { Timestamp } from "firebase/firestore";
+import type { EXERCISE } from "./exercises";
 
-export type ExerciseType = "pushup" | "pullup" | "squat" | "abs";
+export type ExerciseType = keyof typeof EXERCISE;
 
 export type SetRow = {
   id: string;

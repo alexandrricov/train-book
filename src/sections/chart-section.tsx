@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
-import type { SetRow, SetRowDB } from "../types";
+import type { SetRow, SetRowDB, ExerciseType } from "../types";
 import { subscribeMyItems } from "../firebase-db";
-import { type ExerciseType } from "../exercises";
 import { Timestamp } from "firebase/firestore";
 import {
   CartesianGrid,

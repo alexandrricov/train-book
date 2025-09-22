@@ -30,5 +30,3 @@ export const EXERCISE_ORDER: (keyof typeof EXERCISE)[] = [
   "squat",
   "abs",
 ] as const;
-
-export type ExerciseType = keyof typeof EXERCISE;

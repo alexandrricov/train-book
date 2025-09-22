@@ -11,9 +11,10 @@ import {
   serverTimestamp,
   Timestamp,
   writeBatch,
+  where,
 } from "firebase/firestore";
 import { auth, db } from "./firebase";
-import { type SetRow } from "./types";
+import { type SetRow, type SetRowDB } from "./types";
 
 export async function createItemForCurrentUser(payload: SetRow) {
   const uid = auth.currentUser?.uid;
@@ -46,6 +47,33 @@ export function subscribeMyItems(cb: (items: SetRow[]) => void) {
     //   snap.docs.map((d) => ({ id: d.id, ...d.data() }))
     // );
     cb(snap.docs.map((d) => ({ id: d.id, ...d.data() })) as SetRow[]);
+  });
+}
+
+function getTodayYMD(): string {
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = String(now.getMonth() + 1).padStart(2, "0");
+  const d = String(now.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
+}
+
+export function subscribeTodayItems(cb: (rows: SetRowDB[]) => void) {
+  const uid = auth.currentUser?.uid;
+  if (!uid) throw new Error("Not authenticated");
+
+  const today = getTodayYMD();
+  const q = query(
+    collection(db, "users", uid, "items"),
+    where("date", "==", today)
+  );
+
+  return onSnapshot(q, (snap) => {
+    const rows = snap.docs.map((d) => ({
+      id: d.id,
+      ...d.data(),
+    })) as SetRowDB[];
+    cb(rows);
   });
 }
 
