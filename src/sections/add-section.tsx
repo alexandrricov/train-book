@@ -47,7 +47,7 @@ export function AddSection() {
           Date
           <input
             type="date"
-            className="mt-1 w-full border rounded-xl p-2"
+            className="mt-1 w-full border rounded-xl p-2 min-w-0"
             value={date}
             onChange={(e) => setDate(e.target.value)}
           />
