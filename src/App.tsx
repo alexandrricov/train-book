@@ -17,12 +17,18 @@ function App() {
           </Link>
           <nav
             className={clsx(
-              "max-w-150 mx-auto w-full flex items-center justify-between",
-              "max-sm:h-10 max-sm:fixed max-sm:bottom-0 max-sm:left-0 max-sm:right-0 max-sm:border-t max-sm:px-4 max-sm:py-2 max-sm:z-10 max-sm:bg-[Canvas]",
-              "sm:w-auto "
+              "mx-auto w-full flex items-center justify-between",
+              "max-sm:h-20 max-sm:fixed max-sm:bottom-0 max-sm:left-0 max-sm:right-0 max-sm:border-t max-sm:px-4 max-sm:py-2 max-sm:z-10 max-sm:bg-[Canvas]",
+              "sm:w-auto"
             )}
           >
-            <ul className="flex mx-auto gap-x-4 [&_a]:flex [&_a]:gap-1 [&_a]:items-center [&_a]:justify-center [&_a]:text-sm">
+            <ul
+              className={clsx(
+                "flex mx-auto gap-x-4 max-w-150",
+                "[&_a]:flex [&_a]:gap-1 [&_a]:items-center [&_a]:justify-center [&_a]:text-sm",
+                "max-sm:[&_a]:h-full max-sm:[&_a]:flex-col"
+              )}
+            >
               <li>
                 <NavLink
                   to="/"
@@ -61,7 +67,7 @@ function App() {
           <GoogleLoginButton />
         </div>
       </header>
-      <main className="max-w-150 mx-auto px-4 w-full max-sm:mb-10">
+      <main className="max-w-150 mx-auto px-4 w-full max-sm:mb-20">
         {user ? (
           <>
             <Outlet />

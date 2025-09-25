@@ -407,7 +407,7 @@ export function ChartSection() {
                         >
                           <Icon
                             name={entry.value as ExerciseType}
-                            className="size-5"
+                            className="size-5 max-sm:sr-only"
                             style={{
                               color:
                                 EXERCISE[entry.value as ExerciseType].color,
