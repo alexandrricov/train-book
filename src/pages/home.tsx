@@ -141,6 +141,7 @@ export function TodayProgress() {
                       progress={total / target}
                       style={{ color: exercice.color }}
                       className="ml-auto"
+                      size={40}
                     />
                   )}
                 </li>

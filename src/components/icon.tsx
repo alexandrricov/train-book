@@ -35,22 +35,25 @@ export const ProgressIcon = ({
   name,
   progress,
   size = 24,
+  strokeWidth = 4,
   className,
   ...props
 }: {
   name: IconName;
   progress: number;
   size?: number;
+  strokeWidth?: number;
+  className?: string;
 } & React.SVGProps<SVGSVGElement>) => {
-  const R = 54;
-  const CENTER = 60;
-  const iconSize = size * 1;
+  const CENTER = size / 2;
+  const R = CENTER - strokeWidth / 2;
+  const iconSize = size * 0.6;
 
   return (
     <svg
       width={size}
       height={size}
-      viewBox="0 0 120 120"
+      viewBox={`0 0 ${size} ${size}`}
       className={clsx(className)}
       {...props}
     >
@@ -60,7 +63,7 @@ export const ProgressIcon = ({
         r={R}
         fill="none"
         stroke="#e6e6e6"
-        stroke-width="12"
+        strokeWidth={strokeWidth}
       />
       <circle
         style={{
@@ -73,13 +76,14 @@ export const ProgressIcon = ({
         r={R}
         fill="none"
         stroke="currentColor"
-        stroke-width="12"
+        strokeWidth={strokeWidth}
         pathLength="100"
+        strokeLinecap="round"
       />
       <g
         transform={`translate(${CENTER} ${CENTER}) scale(${
-          iconSize / 50
-        }) translate(-60 -60)`}
+          iconSize / 45
+        }) translate(-${CENTER} -${CENTER})`}
       >
         <use
           xlinkHref={`${
