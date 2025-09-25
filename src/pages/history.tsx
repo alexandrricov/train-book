@@ -55,7 +55,7 @@ export function History() {
     return Object.keys(groupedItems).sort((a, b) => (a > b ? -1 : 1));
   }, [groupedItems]);
 
-  console.log({ items, groupedItems, days, itemsGroupedByDate });
+  // console.log({ items, groupedItems, days, itemsGroupedByDate });
 
   if (items.length === 0) return <div>No items yet</div>;
 

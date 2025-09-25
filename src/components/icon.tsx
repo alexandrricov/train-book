@@ -22,7 +22,9 @@ export const Icon = ({
 }: IconProps & React.SVGProps<SVGSVGElement>) => {
   return (
     <svg width={size} height={size} {...props}>
-      <use xlinkHref={`/icons-sprite.svg#icon__${name}`} />
+      <use
+        xlinkHref={`${import.meta.env.BASE_URL}icons-sprite.svg#icon__${name}`}
+      />
     </svg>
   );
 };
