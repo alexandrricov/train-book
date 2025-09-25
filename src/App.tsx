@@ -10,7 +10,7 @@ function App() {
 
   return (
     <>
-      <header className="border-b w-full mb-2">
+      <header className="border-b w-full mb-2 sticky top-0 bg-[Canvas] z-10">
         <div className="flex items-center justify-between p-4 max-w-150 mx-auto">
           <Link to="/" className="flex items-center text-primary-500">
             <Logo className="h-10 w-auto" />
@@ -61,7 +61,7 @@ function App() {
           <GoogleLoginButton />
         </div>
       </header>
-      <main className="max-w-150 mx-auto px-4 overflow-y-auto w-full max-sm:mb-10">
+      <main className="max-w-150 mx-auto px-4 w-full max-sm:mb-10">
         {user ? (
           <>
             <Outlet />
