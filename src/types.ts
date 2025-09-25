@@ -13,3 +13,18 @@ export type SetRow = {
 export type SetRowDB = SetRow & {
   createdAt: Timestamp;
 };
+
+export type TargetRow = {
+  type: ExerciseType;
+  value: number;
+  date: string;
+};
+
+export type TargetRowDB = TargetRow & {
+  createdAt: Timestamp;
+};
+
+export type TargetsAsOf = {
+  // map type -> { value, date } if exists on that date
+  [T in ExerciseType]?: { value: number; date: string };
+};

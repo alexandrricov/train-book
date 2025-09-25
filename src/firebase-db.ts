@@ -12,9 +12,18 @@ import {
   Timestamp,
   writeBatch,
   where,
+  limit,
 } from "firebase/firestore";
 import { auth, db } from "./firebase";
-import { type SetRow, type SetRowDB } from "./types";
+import {
+  type ExerciseType,
+  type SetRow,
+  type SetRowDB,
+  type TargetRowDB,
+  type TargetsAsOf,
+} from "./types";
+import { toDateString } from "./utils/date";
+import { EXERCISE } from "./exercises";
 
 export async function createItemForCurrentUser(payload: SetRow) {
   const uid = auth.currentUser?.uid;
@@ -271,4 +280,106 @@ export async function importMyItemsFromJSON(
     if (inBatch >= 400) await flush();
   }
   await flush();
+}
+
+export async function setTarget(
+  type: ExerciseType,
+  value: number,
+  date: string = toDateString()
+): Promise<void> {
+  // Basic validation
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+    throw new Error("date must be 'YYYY-MM-DD'");
+  }
+  // if (value < 0) throw new Error("value must be >= 0");
+
+  const uid = auth.currentUser?.uid;
+  if (!uid) throw new Error("Not authenticated");
+
+  const col = collection(db, "users", uid, "targets");
+  await addDoc(col, {
+    type,
+    value,
+    date,
+    createdAt: serverTimestamp(),
+  } as TargetRowDB);
+}
+
+export async function getTargets(
+  dateYMD: string = toDateString(new Date())
+): Promise<TargetsAsOf> {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(dateYMD)) {
+    throw new Error("dateYMD must be 'YYYY-MM-DD'");
+  }
+
+  const uid = auth.currentUser?.uid;
+  if (!uid) throw new Error("Not authenticated");
+
+  const col = collection(db, "users", uid, "targets");
+
+  const result: TargetsAsOf = {};
+  const types = Object.keys(EXERCISE) as ExerciseType[];
+
+  // Run per-type "latest before or on date" query
+  // where(type == T) && where(date <= date) orderBy(date desc) limit(1)
+  await Promise.all(
+    types.map(async (t) => {
+      const q1 = query(
+        col,
+        where("type", "==", t),
+        where("date", "<=", dateYMD),
+        orderBy("date", "desc"),
+        limit(1)
+      );
+      const snap = await getDocs(q1);
+      const doc = snap.docs[0];
+      if (doc) {
+        const data = doc.data() as TargetRowDB;
+        result[t] = { value: data.value, date: data.date };
+      }
+    })
+  );
+  return result;
+}
+
+export function subscribeTargets(
+  dateYMD: string,
+  cb: (targets: TargetsAsOf) => void
+): () => void {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(dateYMD)) {
+    throw new Error("dateYMD must be 'YYYY-MM-DD'");
+  }
+
+  const uid = auth.currentUser?.uid;
+  if (!uid) throw new Error("Not authenticated");
+
+  const col = collection(db, "users", uid, "targets");
+  const types = Object.keys(EXERCISE) as ExerciseType[];
+
+  // Keep last values in memory and emit merged object on any change
+  const current: TargetsAsOf = {};
+
+  const unsubs = types.map((t) => {
+    const q1 = query(
+      col,
+      where("type", "==", t),
+      where("date", "<=", dateYMD),
+      orderBy("date", "desc"),
+      limit(1)
+    );
+
+    return onSnapshot(q1, (snap) => {
+      const doc = snap.docs[0];
+      if (doc) {
+        const data = doc.data() as TargetRowDB;
+        current[t] = { value: data.value, date: data.date };
+      } else {
+        delete current[t];
+      }
+      cb({ ...current });
+    });
+  });
+
+  // Return combined unsubscribe
+  return () => unsubs.forEach((u) => u());
 }

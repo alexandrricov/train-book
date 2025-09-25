@@ -1,13 +1,13 @@
 import { ChartSection } from "../sections/chart-section";
 import { useEffect, useMemo, useState } from "react";
-import { createItemForCurrentUser } from "../firebase-db";
+import { createItemForCurrentUser, subscribeTargets } from "../firebase-db";
 import { Input } from "../components/input";
 import { Select } from "../components/select";
 import { Button } from "../components/action";
 import { toDateString } from "../utils/date";
 
 import { subscribeTodayItems } from "../firebase-db";
-import type { ExerciseType, SetRow } from "../types";
+import type { ExerciseType, SetRow, TargetsAsOf } from "../types";
 import { EXERCISE, EXERCISE_ORDER } from "../exercises";
 
 export function Home() {
@@ -22,7 +22,9 @@ export function Home() {
 }
 
 function AddSection() {
-  const [exType, setExType] = useState<string>(EXERCISE_ORDER[0] || "pushup");
+  const [exType, setExType] = useState<ExerciseType>(
+    EXERCISE_ORDER[0] || "pushup"
+  );
   const [count, setCount] = useState<number>(0);
   const [loading, setLoading] = useState(false);
 
@@ -50,7 +52,7 @@ function AddSection() {
       >
         <Select
           value={exType}
-          onChange={(e) => setExType(e.target.value)}
+          onChange={(e) => setExType(e.target.value as ExerciseType)}
           options={EXERCISE_ORDER.map((key) => ({
             children: EXERCISE[key].label,
             value: key,
@@ -81,9 +83,18 @@ function AddSection() {
 
 export function TodayProgress() {
   const [items, setItems] = useState<SetRow[]>([]);
+  const [targets, setTargets] = useState<TargetsAsOf>({});
 
   useEffect(() => {
     const unsubItems = subscribeTodayItems(setItems);
+
+    return () => {
+      unsubItems();
+    };
+  }, []);
+
+  useEffect(() => {
+    const unsubItems = subscribeTargets(toDateString(), setTargets);
 
     return () => {
       unsubItems();
@@ -117,7 +128,11 @@ export function TodayProgress() {
                   {EXERCISE[type as ExerciseType].label}
                 </span>
                 : {counts.join(", ")} (Total:{" "}
-                {counts.reduce((a, b) => a + b, 0)})
+                {counts.reduce((a, b) => a + b, 0)}
+                {targets[type as ExerciseType]
+                  ? ` / ${targets[type as ExerciseType]?.value}`
+                  : ""}
+                )
               </li>
             ))}
         </ul>
