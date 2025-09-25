@@ -1,33 +1,67 @@
-import { NavLink, Outlet } from "react-router";
+import { Outlet, Link, NavLink } from "react-router";
 import GoogleLoginButton from "./components/login-button";
 import { useAuth } from "./providers/auth";
 import { Logo } from "./components/logo";
+import { Icon } from "./components/icon";
+import { clsx } from "clsx";
 
 function App() {
   const { user, loading } = useAuth();
 
   return (
     <>
-      <header className="flex items-center justify-between p-4 border-b mb-6 sticky top-0 bg-white z-10">
-        <NavLink to="/" className="flex items-center">
-          <Logo className="h-10 w-auto" />
-        </NavLink>
-        <nav className="max-sm:h-10 max-sm:fixed max-sm:bottom-0 max-sm:left-0 max-sm:right-0 max-sm:border-t max-sm:px-4 max-sm:py-2 flex items-center justify-between w-full sm:w-auto max-sm:z-10 max-sm:bg-white">
-          <ul className="flex space-x-4">
-            <li>
-              <NavLink to="/">Home</NavLink>
-            </li>
-            <li>
-              <NavLink to="/history">History</NavLink>
-            </li>
-            <li>
-              <NavLink to="/settings">Settings</NavLink>
-            </li>
-          </ul>
-        </nav>
-        <GoogleLoginButton />
+      <header className="border-b w-full">
+        <div className="flex items-center justify-between p-4 max-w-150 mx-auto">
+          <Link to="/" className="flex items-center text-primary-500">
+            <Logo className="h-10 w-auto" />
+          </Link>
+          <nav
+            className={clsx(
+              "max-w-150 mx-auto w-full flex items-center justify-between",
+              "max-sm:h-10 max-sm:fixed max-sm:bottom-0 max-sm:left-0 max-sm:right-0 max-sm:border-t max-sm:px-4 max-sm:py-2 max-sm:z-10 max-sm:bg-[Canvas]",
+              "sm:w-auto "
+            )}
+          >
+            <ul className="flex mx-auto space-x-4 [&_a]:flex [&_a]:gap-2 [&_a]:items-center [&_a]:justify-center [&_a]:text-sm [&_a_svg]:mb-1">
+              <li>
+                <NavLink
+                  to="/"
+                  className={({ isActive }) =>
+                    isActive ? "text-primary-500" : ""
+                  }
+                >
+                  <Icon name="home" />
+                  Home
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
+                  to="/history"
+                  className={({ isActive }) =>
+                    isActive ? "text-primary-500" : ""
+                  }
+                >
+                  <Icon name="notebook" />
+                  History
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
+                  to="/settings"
+                  className={({ isActive }) =>
+                    isActive ? "text-primary-500" : ""
+                  }
+                >
+                  <Icon name="gear" />
+                  Settings
+                </NavLink>
+              </li>
+            </ul>
+          </nav>
+          <GoogleLoginButton />
+        </div>
       </header>
-      <main className="container mx-auto px-4">
+      <main className="max-w-150 mx-auto px-4 overflow-y-auto w-full max-sm:mb-10">
         {user ? (
           <>
             <Outlet />
@@ -41,10 +75,12 @@ function App() {
           </div>
         )}
       </main>
-      <footer className="w-full mx-auto p-4 text-xs text-gray-500 max-sm:mb-10">
-        <p>Copyright &copy; 2025</p>
-        <p>Open source, from Alexandr Rîcov with ❤️</p>
-      </footer>
+      {/* <footer className="w-full max-sm:mb-10">
+        <div className="max-w-150 mx-auto p-4 text-xs text-gray-500 ">
+          <p>Copyright &copy; 2025</p>
+          <p>Open source, from Alexandr Rîcov with ❤️</p>
+        </div>
+      </footer> */}
     </>
   );
 }

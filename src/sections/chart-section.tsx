@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { SetRow, SetRowDB, ExerciseType } from "../types";
 import { subscribeMyItems } from "../firebase-db";
 import { Timestamp } from "firebase/firestore";
@@ -11,7 +11,11 @@ import {
   Tooltip,
   XAxis,
   YAxis,
+  type LegendPayload,
+  type TooltipContentProps,
 } from "recharts";
+import { EXERCISE, EXERCISE_ORDER } from "../exercises";
+import { Icon } from "../components/icon";
 
 // function formatDateTime(
 //   date: Date | number | string,
@@ -182,13 +186,6 @@ export type DailyTotals = {
   date: string; // "YYYY-MM-DD"
 } & Partial<Record<ExerciseType, number>>;
 
-const EXERCISE_COLORS = {
-  pushup: "#8884d8",
-  pullup: "#82ca9d",
-  squat: "#ffc658",
-  abs: "#ff7300",
-} as const;
-
 export function ChartSection() {
   const [periodFilter, setPeriodFilter] = useState<PeriodTabsKey>(
     PeriodTabsKey.month
@@ -203,24 +200,46 @@ export function ChartSection() {
     };
   }, []);
 
+  const [dates, types] = useMemo(() => {
+    if (items.length === 0) return [[], []];
+    const ds = items.reduce<SetRow["date"][]>((acc, it) => {
+      let d: string | null = null;
+      if (typeof it.date === "string" && /^\d{4}-\d{2}-\d{2}$/.test(it.date)) {
+        d = it.date;
+      }
+
+      if (d && !acc.includes(d)) acc.push(d);
+      return acc;
+    }, []);
+    ds.sort((a, b) => (a < b ? -1 : a > b ? 1 : 0));
+
+    const types = items
+      .reduce<SetRow["type"][]>((acc, it) => {
+        if (it.type && !acc.includes(it.type)) acc.push(it.type);
+        return acc;
+      }, [])
+      .sort((a, b) => {
+        const orderA = EXERCISE_ORDER.indexOf(a as ExerciseType);
+        const orderB = EXERCISE_ORDER.indexOf(b as ExerciseType);
+        return orderA - orderB;
+      });
+
+    return [ds, types];
+  }, [items]);
+
   function groupItemsByDateAndType(items: SetRowDB[]): DailyTotals[] {
-    // 1) Collect all date keys for items
-    const itemDateKeys = items.map(getDateKey);
-    // 2) Determine start date (min) and end date (today UTC)
-    let startYMD: string;
-    if (itemDateKeys.length > 0) {
-      startYMD = itemDateKeys.reduce((min, cur) => (cur < min ? cur : min));
-    } else {
-      // If no items, start at today to avoid empty span
-      startYMD = dateToYMDUTC(new Date());
-    }
+    const startYMD =
+      dates.length > 0
+        ? dates.reduce((min, cur) => (cur < min ? cur : min))
+        : dateToYMDUTC(new Date());
+
     const startDate = ymdToUTCDate(startYMD);
-    const todayUTC = new Date(); // current instant
+    const todayUTC = new Date();
     const endYMD = dateToYMDUTC(todayUTC);
     const endDate = ymdToUTCDate(endYMD);
 
     // Map<DateKey, Map<Type, Sum>>
-    const byDate: Map<string, Map<ExerciseType, number>> = new Map();
+    const byDate: Map<SetRow["date"], Map<ExerciseType, number>> = new Map();
 
     for (
       let d = new Date(startDate.getTime());
@@ -256,7 +275,7 @@ export function ChartSection() {
 
   const groupedItems = groupItemsByDateAndType(items as SetRowDB[]);
 
-  console.log("groupItems", groupedItems);
+  // console.log("groupItems", groupedItems);
 
   return (
     <section>
@@ -300,20 +319,107 @@ export function ChartSection() {
                 (dataMax) => dataMax + 10,
               ]}
             />
-            <Tooltip />
-            <Line
-              type="monotone"
-              dataKey="pushup"
-              stroke={EXERCISE_COLORS.pushup}
-              connectNulls
+            <Tooltip
+              active
+              content={({
+                active,
+                payload,
+                label,
+              }: TooltipContentProps<number, string>) => {
+                // console.log("tooltip", active, payload, label);
+                if (active && payload && payload.length && label) {
+                  return (
+                    <article className="p-4 bg-white border rounded shadow">
+                      <h3 className="mb-2">
+                        {new Intl.DateTimeFormat(undefined, {
+                          dateStyle: "medium",
+                        }).format(new Date(label))}
+                      </h3>
+                      <dl className="">
+                        {payload
+                          ?.sort((a, b) => {
+                            const orderA = EXERCISE_ORDER.indexOf(
+                              a.value as ExerciseType
+                            );
+                            const orderB = EXERCISE_ORDER.indexOf(
+                              b.value as ExerciseType
+                            );
+                            return orderA - orderB;
+                          })
+                          .map((entry, index) => (
+                            <div
+                              key={`item-${index}`}
+                              style={{
+                                color: entry.color,
+                              }}
+                              className="flex gap-2 items-center justify-between"
+                            >
+                              <dt className="flex gap-2 items-center">
+                                <Icon
+                                  name={entry.dataKey as ExerciseType}
+                                  className="size-5"
+                                  style={{
+                                    color: entry.color,
+                                  }}
+                                />
+                                {EXERCISE[entry.dataKey as ExerciseType].label}
+                              </dt>
+                              <dd>{entry.value}</dd>
+                            </div>
+                          ))}
+                      </dl>
+                    </article>
+                  );
+                }
+                return null;
+              }}
             />
-            <Line
-              type="monotone"
-              dataKey="pullup"
-              stroke={EXERCISE_COLORS.pullup}
-              connectNulls
+            {types.map((type) => (
+              <Line
+                key={type}
+                type="monotone"
+                dataKey={type}
+                stroke={EXERCISE[type].color}
+                connectNulls
+              />
+            ))}
+            <Legend
+              content={({ payload }) => {
+                return (
+                  <ul className="flex gap-2 items-center justify-center">
+                    {(payload as LegendPayload[])
+                      ?.sort((a: LegendPayload, b: LegendPayload) => {
+                        const orderA = EXERCISE_ORDER.indexOf(
+                          a.value as ExerciseType
+                        );
+                        const orderB = EXERCISE_ORDER.indexOf(
+                          b.value as ExerciseType
+                        );
+                        return orderA - orderB;
+                      })
+                      .map((entry: LegendPayload, index: number) => (
+                        <li
+                          key={`item-${index}`}
+                          style={{
+                            color: EXERCISE[entry.value as ExerciseType].color,
+                          }}
+                          className="flex gap-2 items-center"
+                        >
+                          <Icon
+                            name={entry.value as ExerciseType}
+                            className="size-5"
+                            style={{
+                              color:
+                                EXERCISE[entry.value as ExerciseType].color,
+                            }}
+                          />
+                          {EXERCISE[entry.value as ExerciseType].label}
+                        </li>
+                      ))}
+                  </ul>
+                );
+              }}
             />
-            <Legend />
           </LineChart>
         </ResponsiveContainer>
       </div>

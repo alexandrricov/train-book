@@ -2,28 +2,20 @@ import { useState } from "react";
 import { createItemForCurrentUser } from "../firebase-db";
 import { type SetRow } from "../types";
 import { EXERCISE, EXERCISE_ORDER } from "../exercises";
-
-function toLocalDateString(d = new Date()) {
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  return `${y}-${m}-${day}`;
-}
-
-const DEFAULT_EXERCISES = EXERCISE_ORDER;
+import { Input } from "../components/input";
+import { Select } from "../components/select";
+import { Button } from "../components/action";
+import { toDateString } from "../utils/date";
 
 export function AddSection() {
-  const [exType, setExType] = useState<string>(
-    DEFAULT_EXERCISES[0] || "pushup"
-  );
+  const [exType, setExType] = useState<string>(EXERCISE_ORDER[0] || "pushup");
   const [count, setCount] = useState<number>(0);
   const [loading, setLoading] = useState(false);
-  // const [rows, setRows] = useState<SetRow[]>([]);
-  const [date, setDate] = useState<string>(toLocalDateString());
+  const [date, setDate] = useState<string>(toDateString());
 
   return (
     <section className="p-4 rounded-2xl shadow-sm border mb-6">
-      <h2 className="text-lg font-semibold mb-3">Add set</h2>
+      <h2 className="font-semibold mb-3">Add set</h2>
       <form
         className="grid grid-cols-1 sm:grid-cols-4 gap-3 items-end"
         onSubmit={(e) => {
@@ -43,48 +35,39 @@ export function AddSection() {
             .finally(() => setLoading(false));
         }}
       >
-        <label className="text-sm flex flex-col">
-          Date
-          <input
-            type="date"
-            className="mt-1 border rounded-xl p-2 min-w-0 box-border grow"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-          />
-        </label>
-        <label className="text-sm">
-          Exercise Type
-          <select
-            className="mt-1 w-full border rounded-xl p-2"
-            value={exType}
-            onChange={(e) => setExType(e.target.value)}
-            required
-          >
-            {DEFAULT_EXERCISES.map((key) => (
-              <option key={key} value={key}>
-                {EXERCISE[key].label}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className="text-sm">
-          Count
-          <input
-            type="number"
-            className="mt-1 w-full border rounded-xl p-2 text-[16px]"
-            value={count || ""}
-            onChange={(e) => setCount(Number(e.target.value))}
-            min={1}
-            required
-          />
-        </label>
-        <button
-          type="submit"
-          className="px-4 py-2 rounded-xl bg-blue-600 text-white disabled:opacity-50"
-          disabled={loading}
+        <Input
+          type="date"
+          value={date}
+          onChange={(e) => setDate(e.target.value)}
+          min={1}
+          required
         >
+          Date
+        </Input>
+        <Select
+          value={exType}
+          onChange={(e) => setExType(e.target.value)}
+          options={EXERCISE_ORDER.map((key) => ({
+            children: EXERCISE[key].label,
+            value: key,
+          }))}
+          required
+        >
+          Exercise Type
+        </Select>
+
+        <Input
+          type="number"
+          value={count || ""}
+          onChange={(e) => setCount(Number(e.target.value))}
+          min={1}
+          required
+        >
+          Count
+        </Input>
+        <Button type="submit" variation="primary" disabled={loading}>
           Add
-        </button>
+        </Button>
       </form>
     </section>
   );
