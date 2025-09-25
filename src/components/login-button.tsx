@@ -35,18 +35,6 @@ export default function GoogleLoginButton() {
     <div className="flex items-center gap-2">
       {user ? (
         <>
-          {/* <span>{user?.email}</span> */}
-          {/* {user?.photoURL && (
-            <img
-              src={user.photoURL}
-              alt={user.displayName ?? "User Avatar"}
-              className="size-10 rounded-full"
-            />
-          )}
-          <Button variation="secondary" onClick={logout}>
-            Logout
-          </Button> */}
-
           <Dropdown
             target={(ref, toggle) => (
               <button type="button" ref={ref} onClick={toggle}>

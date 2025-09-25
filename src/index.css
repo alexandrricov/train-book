@@ -97,6 +97,8 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  accent-color: var(--color-primary-500);
 }
 
 body {
