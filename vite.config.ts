@@ -19,7 +19,8 @@ export default defineConfig(({ mode }) => {
         manifest: {
           name: "TrainBook",
           short_name: "TrainBook",
-          description: "Your workouts & progress",
+          description:
+            "TrainBook helps you log workouts, set daily fitness goals, and track your progress with ease.",
           start_url: base,
           scope: base,
           display: "standalone",
@@ -48,7 +49,7 @@ export default defineConfig(({ mode }) => {
               options: {
                 cacheName: "html",
                 networkTimeoutSeconds: 4,
-                expiration: { maxEntries: 10, maxAgeSeconds: 60 * 60 }, // мягкий кэш
+                expiration: { maxEntries: 10, maxAgeSeconds: 60 * 60 }, // mild caching
               },
             },
           ],

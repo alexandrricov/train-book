@@ -9,6 +9,7 @@ import { toDateString } from "../utils/date";
 import { subscribeTodayItems } from "../firebase-db";
 import type { ExerciseType, SetRow, TargetsAsOf } from "../types";
 import { EXERCISE, EXERCISE_ORDER } from "../exercises";
+import { ProgressIcon, type IconName } from "../components/icon";
 
 export function Home() {
   return (
@@ -122,19 +123,29 @@ export function TodayProgress() {
               const orderB = EXERCISE_ORDER.indexOf(b as ExerciseType);
               return orderA - orderB;
             })
-            .map(([type, counts]) => (
-              <li key={type}>
-                <span className="font-medium">
-                  {EXERCISE[type as ExerciseType].label}
-                </span>
-                : {counts.join(", ")} (Total:{" "}
-                {counts.reduce((a, b) => a + b, 0)}
-                {targets[type as ExerciseType]
-                  ? ` / ${targets[type as ExerciseType]?.value}`
-                  : ""}
-                )
-              </li>
-            ))}
+            .map(([type, counts]) => {
+              const exercice = EXERCISE[type as ExerciseType];
+              const total = counts.reduce((a, b) => a + b, 0);
+              const target = targets[type as ExerciseType]?.value;
+
+              return (
+                <li key={type} className="mb-2 flex items-center gap-2">
+                  <span className="font-medium">
+                    {EXERCISE[type as ExerciseType].label}:
+                  </span>
+                  {counts.join(", ")} (Total: {total}
+                  {target ? ` / ${target}` : ""})
+                  {target && (
+                    <ProgressIcon
+                      name={type as IconName}
+                      progress={total / target}
+                      style={{ color: exercice.color }}
+                      className="ml-auto"
+                    />
+                  )}
+                </li>
+              );
+            })}
         </ul>
       )}
     </section>
