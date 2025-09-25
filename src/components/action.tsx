@@ -12,7 +12,7 @@ type BaseProps = {
     position?: "left" | "right" | "only";
   };
   size?: "small" | "medium" | "large";
-  variation: "primary";
+  variation: "primary" | "secondary";
 };
 
 export function Button({
@@ -95,6 +95,12 @@ function buttonStyles({
     disabled && ["cursor-not-allowed opacity-50 pointer-events-none"],
     variation === "primary" && [
       "rounded-xl bg-primary-500 text-white",
+      "hover:bg-primary-400",
+      isActive && "",
+    ],
+    variation === "secondary" && [
+      "rounded-xl bg-grey-50 text-primary-500",
+      "hover:bg-grey-100 hover:text-grey-900",
       isActive && "",
     ],
     size === "large" &&

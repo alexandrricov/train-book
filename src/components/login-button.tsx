@@ -2,6 +2,8 @@ import { signInWithPopup, signOut } from "firebase/auth";
 import { auth, googleProvider, db } from "../firebase";
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 import { useAuth } from "../providers/auth";
+import { Button } from "./action";
+import { Dropdown } from "./dropdown";
 
 export default function GoogleLoginButton() {
   const { user, loading } = useAuth();
@@ -34,27 +36,39 @@ export default function GoogleLoginButton() {
       {user ? (
         <>
           {/* <span>{user?.email}</span> */}
-          {user?.photoURL && (
+          {/* {user?.photoURL && (
             <img
               src={user.photoURL}
               alt={user.displayName ?? "User Avatar"}
               className="size-10 rounded-full"
             />
           )}
-          <button
-            onClick={logout}
-            className="rounded-xl px-4 py-2 border hover:bg-gray-50"
-          >
+          <Button variation="secondary" onClick={logout}>
             Logout
-          </button>
+          </Button> */}
+
+          <Dropdown
+            target={(ref, toggle) => (
+              <button type="button" ref={ref} onClick={toggle}>
+                <img
+                  src={user.photoURL ?? ""}
+                  alt={user.displayName ?? "User Avatar"}
+                  className="size-10 rounded-full"
+                />
+              </button>
+            )}
+          >
+            <div className="mb-2 text-center font-bold">{user.displayName}</div>
+            <div className="mb-2">{user.email}</div>
+            <Button variation="secondary" onClick={logout} className="w-full">
+              Logout
+            </Button>
+          </Dropdown>
         </>
       ) : (
-        <button
-          onClick={login}
-          className="rounded-xl px-4 py-2 bg-black text-white hover:opacity-90"
-        >
+        <Button variation="primary" onClick={login}>
           Login
-        </button>
+        </Button>
       )}
     </div>
   );

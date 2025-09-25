@@ -22,7 +22,7 @@ function App() {
               "sm:w-auto "
             )}
           >
-            <ul className="flex mx-auto space-x-4 [&_a]:flex [&_a]:gap-2 [&_a]:items-center [&_a]:justify-center [&_a]:text-sm [&_a_svg]:mb-1">
+            <ul className="flex mx-auto gap-x-4 [&_a]:flex [&_a]:gap-1 [&_a]:items-center [&_a]:justify-center [&_a]:text-sm">
               <li>
                 <NavLink
                   to="/"

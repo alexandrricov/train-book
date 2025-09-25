@@ -17,7 +17,7 @@ export function AddSection() {
     <section className="p-4 rounded-2xl shadow-sm border mb-6">
       <h2 className="font-semibold mb-3">Add set</h2>
       <form
-        className="grid grid-cols-1 sm:grid-cols-4 gap-3 items-end"
+        className="flex gap-x-2 gap-y-4 flex-col sm:flex-row"
         onSubmit={(e) => {
           e.preventDefault();
           setLoading(true);
@@ -39,8 +39,9 @@ export function AddSection() {
           type="date"
           value={date}
           onChange={(e) => setDate(e.target.value)}
-          min={1}
+          name="date"
           required
+          className="basis-1/1"
         >
           Date
         </Input>
@@ -51,7 +52,9 @@ export function AddSection() {
             children: EXERCISE[key].label,
             value: key,
           }))}
+          name="type"
           required
+          className="basis-1/1"
         >
           Exercise Type
         </Select>
@@ -61,11 +64,18 @@ export function AddSection() {
           value={count || ""}
           onChange={(e) => setCount(Number(e.target.value))}
           min={1}
+          name="count"
           required
+          className="basis-1/1"
         >
           Count
         </Input>
-        <Button type="submit" variation="primary" disabled={loading}>
+        <Button
+          type="submit"
+          variation="primary"
+          disabled={loading}
+          className="w-full sm:w-auto"
+        >
           Add
         </Button>
       </form>
