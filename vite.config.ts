@@ -13,7 +13,9 @@ export default defineConfig(({ mode }) => {
       react(),
       tailwindcss(),
       VitePWA({
+        filename: "sw.js",
         registerType: "autoUpdate",
+        injectRegister: "auto",
         manifest: {
           name: "TrainBook",
           short_name: "TrainBook",
@@ -35,6 +37,22 @@ export default defineConfig(({ mode }) => {
           ],
         },
         workbox: {
+          skipWaiting: true,
+          clientsClaim: true,
+          cleanupOutdatedCaches: true,
+
+          runtimeCaching: [
+            {
+              urlPattern: ({ request }) => request.mode === "navigate",
+              handler: "NetworkFirst",
+              options: {
+                cacheName: "html",
+                networkTimeoutSeconds: 4,
+                expiration: { maxEntries: 10, maxAgeSeconds: 60 * 60 }, // мягкий кэш
+              },
+            },
+          ],
+
           navigateFallback: isProd ? "/train-book/index.html" : "/index.html",
         },
         devOptions: {
