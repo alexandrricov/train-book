@@ -111,7 +111,7 @@ export function TodayProgress() {
   }, [items]);
 
   return (
-    <section className="p-4 rounded-2xl shadow-sm border border-border mb-6">
+    <section className="p-4 rounded-2xl border border-border mb-6">
       <h2 className="font-semibold mb-3">Today's Progress</h2>
       {Object.entries(groupedItems).length === 0 ? (
         <p className="text-gray-500">No exercises logged today.</p>

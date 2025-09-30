@@ -99,8 +99,8 @@ function buttonStyles({
       isActive && "",
     ],
     variation === "secondary" && [
-      "rounded-xl bg-grey-50 text-brand",
-      "hover:bg-grey-100 hover:text-grey-900",
+      "rounded-xl bg-canvas text-brand",
+      "hover:bg-canvas2 hover:text-canvas-text",
       isActive && "",
     ],
     size === "large" &&

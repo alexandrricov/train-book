@@ -122,7 +122,7 @@ export function Header() {
             </li>
             <li>
               <button type="button" onClick={() => setOpen(!open)}>
-                <Icon name="energy-filled" />
+                <Icon name="plus" />
                 Add
               </button>
             </li>
