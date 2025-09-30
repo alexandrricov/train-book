@@ -166,6 +166,7 @@ export function Header() {
                 setCount(0);
                 // setExType(DEFAULT_EXERCISES[0] || "pushup");
                 // setDate(toLocalDateString());
+                ref.current?.close();
               })
               .finally(() => setLoading(false));
           }}
