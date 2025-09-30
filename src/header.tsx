@@ -30,10 +30,18 @@ export function Header() {
     el.addEventListener("cancel", handleClose);
 
     if (open && !el.open) {
+      const countInput = (
+        el.querySelector("form") as HTMLFormElement | undefined
+      )?.elements.namedItem("count") as HTMLInputElement | undefined;
+
       try {
         el.showModal();
+        countInput?.focus();
       } catch {
-        if (!el.open) el.showModal();
+        if (!el.open) {
+          el.showModal();
+          countInput?.focus();
+        }
       }
     }
 
@@ -45,7 +53,7 @@ export function Header() {
       el.removeEventListener("close", handleClose);
       el.removeEventListener("cancel", handleClose);
     };
-  }, [open, setOpen]);
+  }, [open]);
 
   // const onClickBackdrop: React.MouseEventHandler<HTMLDialogElement> = (e) => {
   //   const el = ref.current;
@@ -171,6 +179,7 @@ export function Header() {
             }))}
             required
             className="basis-1/1"
+            name="type"
           >
             Exercise Type
           </Select>
@@ -182,6 +191,7 @@ export function Header() {
             min={1}
             required
             className="basis-1/1"
+            name="count"
           >
             Count
           </Input>
