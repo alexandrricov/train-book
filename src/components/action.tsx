@@ -90,25 +90,23 @@ function buttonStyles({
   isActive?: boolean;
 }) {
   return clsx(
-    "flex w-fit items-center justify-center rounded-lg",
+    "flex w-fit items-center justify-center rounded-lg font-medium",
     "cursor-pointer  [transition:all_150ms_ease-out]",
     disabled && ["cursor-not-allowed opacity-50 pointer-events-none"],
     variation === "primary" && [
-      "rounded-xl bg-brand text-white",
+      "rounded-lg bg-brand text-white",
       "hover:bg-brand-light",
+      "active:bg-brand-dark",
       isActive && "",
     ],
     variation === "secondary" && [
-      "rounded-xl bg-canvas text-brand",
+      "rounded-lg bg-canvas text-brand",
       "hover:bg-canvas2 hover:text-canvas-text",
       isActive && "",
     ],
-    size === "large" &&
-      `${iconPosition === "only" ? "p-3" : "px-6 py-3"} font-medium`,
-    size === "medium" &&
-      `${iconPosition === "only" ? "p-2" : "px-4 py-2"} font-medium`,
-    size === "small" &&
-      `${iconPosition === "only" ? "p-1" : "px-2 py-1"} font-medium`
+    size === "large" && `${iconPosition === "only" ? "p-3" : "px-6 py-3"}`,
+    size === "medium" && `${iconPosition === "only" ? "p-2" : "px-4 py-2"}`,
+    size === "small" && `${iconPosition === "only" ? "p-1" : "px-2 py-1"}`
   );
 }
 

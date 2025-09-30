@@ -61,20 +61,20 @@ export function History() {
 
   return (
     <>
-      <h1 className="font-bold mb-4">History</h1>
+      <h1 className="text-h1 mb-4">History</h1>
 
       <AddSection />
 
       <section>
-        <h2 className="font-bold mb-4">History log</h2>
+        <h2 className="text-h2 mb-4">History log</h2>
         {days.length === 0 && <div>No items yet</div>}
         <ul>
           {days.map((d) => (
             <li key={d} className="mb-6">
               <details className="open:[&>summary>svg]:rotate-180">
-                <summary className="cursor-pointer text-lg font-semibold mb-2 flex justify-between items-center">
+                <summary className="cursor-pointer mb-2 flex justify-between items-center">
                   <div className="flex items-center gap-2">
-                    <h3>{d}</h3>
+                    <h3 className="text-h3">{d}</h3>
                     <div className="flex">
                       {Object.entries(groupedItems[d])
                         .sort(([a], [b]) => {

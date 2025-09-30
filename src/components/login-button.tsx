@@ -5,7 +5,7 @@ import { useAuth } from "../providers/auth";
 import { Button } from "./action";
 import { Dropdown } from "./dropdown";
 
-export default function GoogleLoginButton() {
+export function GoogleLoginButton() {
   const { user, loading } = useAuth();
 
   const login = async () => {

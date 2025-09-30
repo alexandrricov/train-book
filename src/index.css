@@ -65,14 +65,22 @@
   --color-border: light-dark(var(--color-grey-200), var(--color-grey-600));
 
   --color-brand: light-dark(var(--color-primary-500), var(--color-primary-400));
-  --color-brand-light: light-dark(
-    var(--color-primary-400),
-    var(--color-primary-300)
-  );
-  --color-brand-dark: light-dark(
-    var(--color-primary-600),
-    var(--color-primary-500)
-  );
+  --color-brand-light: color-mix(in oklab, var(--color-brand), white 10%);
+  --color-brand-dark: color-mix(in oklab, var(--color-brand), black 10%);
+
+  --text-h1: 26px;
+  --text-h1--line-height: 1;
+  --text-h1--font-weight: 600;
+  --text-h2: 22px;
+  --text-h2--line-height: 1;
+  --text-h2--font-weight: 600;
+  --text-h3: 18px;
+  --text-h3--line-height: 1;
+  --text-h3--font-weight: 600;
+
+  --text-body: 16px;
+  --text-body--line-height: 1.2;
+  --text-body--font-weight: 400;
 }
 
 :root {
@@ -86,15 +94,22 @@
   -moz-osx-font-smoothing: grayscale;
 
   accent-color: var(--color-brand);
+
+  @apply bg-canvas text-canvas-text text-body;
 }
 
 body {
   min-width: 320px;
   min-height: 100vh;
-  @apply bg-canvas text-canvas-text;
 }
 
 dialog::backdrop {
   @apply bg-canvas/10;
   backdrop-filter: blur(5px);
+}
+
+@layer components {
+  .section {
+    @apply p-4 rounded-2xl border border-border mb-6;
+  }
 }

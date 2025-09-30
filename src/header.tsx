@@ -1,5 +1,5 @@
 import { Link, NavLink } from "react-router";
-import GoogleLoginButton from "./components/login-button";
+import { GoogleLoginButton } from "./components/login-button";
 import { Icon } from "./components/icon";
 import { clsx } from "clsx";
 import { useEffect, useRef, useState } from "react";
@@ -89,7 +89,7 @@ export function Header() {
           <ul
             className={clsx(
               "flex gap-x-4 max-w-150",
-              "[&_:is(a,button)]:flex [&_:is(a,button)]:gap-1 [&_:is(a,button)]:items-center [&_:is(a,button)]:justify-center [&_:is(a,button)]:text-sm",
+              "[&_:is(a,button)]:flex [&_:is(a,button)]:gap-1 [&_:is(a,button)]:items-center [&_:is(a,button)]:justify-center [&_:is(a,button)]:text-sm [&_:is(a,button)]:hover:text-brand",
               "max-sm:[&_:is(a,button)]:h-full max-sm:[&_:is(a,button)]:flex-col"
             )}
           >
@@ -140,7 +140,7 @@ export function Header() {
         )}
       >
         <div className="flex items-center justify-between mb-4">
-          <h2 className="font-semibold">Add set</h2>
+          <h2 className="text-h2">Add set</h2>
           <button type="button" onClick={() => setOpen(false)}>
             <Icon name="close" />
           </button>

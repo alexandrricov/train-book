@@ -15,11 +15,11 @@ import { toDateString } from "../utils/date";
 export function Settings() {
   return (
     <>
-      <h1 className="text-xl font-bold mb-4">Settings</h1>
+      <h1 className="text-h1 mb-4">Settings</h1>
       <Targets />
       <AddTarget />
       <section>
-        <h2 className="font-semibold mb-3">Import/Export data</h2>
+        <h2 className="text-h2 mb-4">Import/Export data</h2>
         <div className="flex items-center gap-4">
           <Button variation="primary" onClick={() => exportMyItemsToJSON()}>
             Export Items
@@ -62,7 +62,7 @@ function Targets() {
 
   return (
     <section className="mb-6">
-      <h2 className="mb-3 font-semibold">Targets</h2>
+      <h2 className="mb-4 text-h2">Targets</h2>
       <dl className="grid grid-cols-2 gap-x-6 gap-y-2 [&_dd]:text-right">
         {EXERCISE_ORDER.map((ex) => (
           <Fragment key={ex}>
@@ -84,7 +84,7 @@ function AddTarget() {
 
   return (
     <section className="mb-6">
-      <h2 className="font-semibold mb-3">Add Target</h2>
+      <h2 className="text-h2 mb-4">Add Target</h2>
 
       <form
         className="flex gap-4"
