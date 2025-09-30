@@ -74,9 +74,9 @@ export function Header() {
   }, [open]);
 
   return (
-    <header className="border-b w-full mb-2 sticky top-0 bg-canvas z-10">
+    <header className="border-b border-border w-full mb-2 sticky top-0 bg-canvas z-10">
       <div className="flex items-center justify-between p-4 max-w-150 mx-auto">
-        <Link to="/" className="flex items-center text-primary-500">
+        <Link to="/" className="flex items-center text-brand">
           <Logo className="h-10 w-auto" />
         </Link>
         <nav
@@ -96,9 +96,7 @@ export function Header() {
             <li>
               <NavLink
                 to="/"
-                className={({ isActive }) =>
-                  isActive ? "text-primary-500" : ""
-                }
+                className={({ isActive }) => (isActive ? "text-brand" : "")}
               >
                 <Icon name="home" />
                 Home
@@ -107,9 +105,7 @@ export function Header() {
             <li>
               <NavLink
                 to="/history"
-                className={({ isActive }) =>
-                  isActive ? "text-primary-500" : ""
-                }
+                className={({ isActive }) => (isActive ? "text-brand" : "")}
               >
                 <Icon name="notebook" />
                 History
@@ -118,9 +114,7 @@ export function Header() {
             <li>
               <NavLink
                 to="/settings"
-                className={({ isActive }) =>
-                  isActive ? "text-primary-500" : ""
-                }
+                className={({ isActive }) => (isActive ? "text-brand" : "")}
               >
                 <Icon name="gear" />
                 Settings
@@ -141,7 +135,7 @@ export function Header() {
         ref={ref}
         // onClick={onClickBackdrop}
         className={clsx(
-          "mx-auto mt-auto p-4 rounded-t-2xl shadow-sm border w-full max-w-md",
+          "mx-auto mt-auto p-4 rounded-t-2xl shadow-sm border border-border w-full max-w-md bg-canvas",
           "md:mb-auto md:rounded-b-2xl"
         )}
       >

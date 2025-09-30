@@ -33,10 +33,6 @@
 
   --color-*: initial;
 
-  --color-canvas: #fff;
-  --color-canvas-text: #000;
-  --color-border: #000;
-
   --color-white: #fff;
   --color-black: #000;
 
@@ -63,33 +59,13 @@
   --color-grey-800: #20293a;
   --color-grey-900: #111729;
 
-  --color-success-100: #def5ed;
-  --color-success-200: #c6eee1;
-  --color-success-300: #87dcc0;
-  --color-success-400: #42d0a1;
-  --color-success-500: #049f6c;
-  --color-success-600: #096b4b;
+  --color-canvas: var(--color-grey-50);
+  --color-canvas-text: var(--color-grey-900);
+  --color-border: var(--color-grey-200);
 
-  --color-info-100: #ebf2fe;
-  --color-info-200: #d8e6fd;
-  --color-info-300: #9dc1fb;
-  --color-info-400: #71a4f5;
-  --color-info-500: #3b82f6;
-  --color-info-600: #0950c3;
-
-  --color-warning-100: #fff6e0;
-  --color-warning-200: #ffebc9;
-  --color-warning-300: #ffdea6;
-  --color-warning-400: #ffbe4c;
-  --color-warning-500: #f29c06;
-  --color-warning-600: #be7a03;
-
-  --color-danger-100: #fff0f3;
-  --color-danger-200: #fadbe1;
-  --color-danger-300: #ed8296;
-  --color-danger-400: #f54b6b;
-  --color-danger-500: #df1c41;
-  --color-danger-600: #710e21;
+  --color-brand: #6842ff;
+  --color-brand-light: #8162ff;
+  --color-brand-dark: #5737d4;
 }
 
 :root {
@@ -102,7 +78,19 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  accent-color: var(--color-primary-500);
+  accent-color: var(--color-brand);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-canvas: var(--color-grey-900);
+    --color-canvas-text: var(--color-grey-50);
+    --color-border: var(--color-grey-600);
+
+    --color-brand: #6842ff;
+    --color-brand-light: #8162ff;
+    --color-brand-dark: #5737d4;
+  }
 }
 
 body {
@@ -113,19 +101,6 @@ body {
 }
 
 dialog::backdrop {
-  /* background-image: linear-gradient(
-    45deg,
-    magenta,
-    rebeccapurple,
-    dodgerblue,
-    green
-  ); */
   background-color: #000;
   opacity: 0.75;
-}
-
-@media (prefers-color-scheme: dark) {
-  /* body {
-    background: linear-gradient(171.89deg, #33383d 2.42%, #191b1e 96.87%);
-  } */
 }

@@ -108,7 +108,7 @@ export function History() {
                 <div className="mt-2">
                   <table className="w-full table-auto border-collapse">
                     <thead>
-                      <tr className="text-left border-b">
+                      <tr className="text-left">
                         <th className="pb-1">Exercise</th>
                         <th className="pb-1">Count</th>
                         <th className="pb-1 text-right">Action</th>
@@ -116,7 +116,7 @@ export function History() {
                     </thead>
                     <tbody>
                       {itemsGroupedByDate[d].map((row) => (
-                        <tr key={row.id} className="border-b">
+                        <tr key={row.id} className="border-t border-border">
                           <td className="py-1">
                             <div className="flex items-center gap-2">
                               <Icon
@@ -135,7 +135,7 @@ export function History() {
                           <td className="py-1">{row.count}</td>
                           <td className="py-1 font-semibold">
                             <Button
-                              variation="primary"
+                              variation="secondary"
                               size="small"
                               className="ml-auto"
                               onClick={() => {

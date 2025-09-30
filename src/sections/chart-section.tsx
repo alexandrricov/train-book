@@ -307,10 +307,15 @@ export function ChartSection() {
               bottom: 5,
             }}
           >
-            <CartesianGrid strokeDasharray="3 3" />
+            <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" />
             <XAxis
               dataKey="date"
               tickFormatter={(item) => formatTick(item, periodFilter)}
+              tick={{ fill: "currentColor" }}
+              tickLine={{
+                stroke: "var(--color-border)",
+              }}
+              axisLine={{ stroke: "var(--color-border)" }}
             />
             <YAxis
               width={20}
@@ -318,18 +323,34 @@ export function ChartSection() {
                 (dataMin) => Math.max(0 - Math.abs(dataMin), 0),
                 (dataMax) => dataMax + 10,
               ]}
+              tick={{ fill: "currentColor" }}
+              tickLine={{
+                stroke: "var(--color-border)",
+              }}
+              axisLine={{ stroke: "var(--color-border)" }}
             />
+            {types.map((type) => (
+              <Line
+                key={type}
+                type="monotone"
+                dataKey={type}
+                stroke={EXERCISE[type].color}
+                dot={{ fill: "var(--color-canvas)" }}
+                activeDot={{ stroke: "var(--color-canvas)" }}
+                connectNulls
+              />
+            ))}
             <Tooltip
+              cursor={{ stroke: "var(--color-border)", strokeWidth: 2 }}
               active
               content={({
                 active,
                 payload,
                 label,
               }: TooltipContentProps<number, string>) => {
-                // console.log("tooltip", active, payload, label);
                 if (active && payload && payload.length && label) {
                   return (
-                    <article className="p-4 bg-white border rounded shadow">
+                    <article className="p-4 bg-canvas border border-border rounded shadow">
                       <h3 className="mb-2">
                         {new Intl.DateTimeFormat(undefined, {
                           dateStyle: "medium",
@@ -374,15 +395,6 @@ export function ChartSection() {
                 return null;
               }}
             />
-            {types.map((type) => (
-              <Line
-                key={type}
-                type="monotone"
-                dataKey={type}
-                stroke={EXERCISE[type].color}
-                connectNulls
-              />
-            ))}
             <Legend
               content={({ payload }) => {
                 return (

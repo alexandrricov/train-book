@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { Button } from "../components/action";
 import { Input } from "../components/input";
 import { Select } from "../components/select";
@@ -16,24 +16,24 @@ export function Settings() {
   return (
     <>
       <h1 className="text-xl font-bold mb-4">Settings</h1>
-
       <Targets />
-
+      <AddTarget />
       <section>
         <h2 className="font-semibold mb-3">Import/Export data</h2>
-        <div className="flex items-center gap-2 mt-6">
-          <Button variation="secondary" onClick={() => exportMyItemsToJSON()}>
+        <div className="flex items-center gap-4">
+          <Button variation="primary" onClick={() => exportMyItemsToJSON()}>
             Export Items
           </Button>
-          <label>
+          <label className="cursor-pointer bg-canvas text-gray-700 px-4 py-2 rounded-xl hover:bg-grey-100 dark:hover:bg-grey-600">
             Import Items
             <input
               type="file"
               name="import"
               className="sr-only"
+              accept="application/json"
               onChange={(e) => {
                 const file = e.target.files?.[0];
-                if (file) {
+                if (file && window.confirm("Import items from JSON?")) {
                   importMyItemsFromJSON(file, {
                     mode: "append",
                     preserveIds: true,
@@ -50,12 +50,6 @@ export function Settings() {
 }
 
 function Targets() {
-  const [exType, setExType] = useState<ExerciseType>(
-    EXERCISE_ORDER[0] || "pushup"
-  );
-  const [count, setCount] = useState<number>(0);
-  const [loading, setLoading] = useState(false);
-
   const [items, setItems] = useState<TargetsAsOf>({});
 
   useEffect(() => {
@@ -69,11 +63,28 @@ function Targets() {
   return (
     <section className="mb-6">
       <h2 className="mb-3 font-semibold">Targets</h2>
-      {EXERCISE_ORDER.map((ex) => (
-        <div key={ex} className="mb-4">
-          {EXERCISE[ex].label}: {items[ex]?.value ?? "not set"}
-        </div>
-      ))}
+      <dl className="grid grid-cols-2 gap-x-6 gap-y-2 [&_dd]:text-right">
+        {EXERCISE_ORDER.map((ex) => (
+          <Fragment key={ex}>
+            <dt>{EXERCISE[ex].label}</dt>
+            <dd>{items[ex]?.value ?? "not set"}</dd>
+          </Fragment>
+        ))}
+      </dl>
+    </section>
+  );
+}
+
+function AddTarget() {
+  const [exType, setExType] = useState<ExerciseType>(
+    EXERCISE_ORDER[0] || "pushup"
+  );
+  const [count, setCount] = useState<number>(0);
+  const [loading, setLoading] = useState(false);
+
+  return (
+    <section className="mb-6">
+      <h2 className="font-semibold mb-3">Add Target</h2>
 
       <form
         className="flex gap-4"
@@ -117,7 +128,7 @@ function Targets() {
           disabled={loading}
           className="text-nowrap"
         >
-          Save Targets
+          Add
         </Button>
       </form>
     </section>

@@ -12,11 +12,11 @@ export function Select({
   return (
     <label
       className={clsx(
-        "flex relative border rounded-lg border-primary-300 h-10",
+        "flex relative border rounded-lg border-border h-10",
         className
       )}
     >
-      <span className="absolute left-1 transform -translate-y-1/2 text-gray-500 bg-white p-0.5 pointer-events-none whitespace-nowrap text-xs">
+      <span className="absolute left-1 transform -translate-y-1/2 text-gray-500 bg-canvas p-0.5 pointer-events-none whitespace-nowrap text-xs">
         {children}
       </span>
       <select className="w-full p-2 appearance-none h-9.5" {...props}>

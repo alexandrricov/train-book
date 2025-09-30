@@ -14,7 +14,7 @@ export function AddSection() {
   const [date, setDate] = useState<string>(toDateString());
 
   return (
-    <section className="p-4 rounded-2xl shadow-sm border mb-6">
+    <section className="p-4 rounded-2xl shadow-sm border border-border mb-6">
       <h2 className="font-semibold mb-3">Add set</h2>
       <form
         className="flex gap-x-2 gap-y-4 flex-col sm:flex-row"
