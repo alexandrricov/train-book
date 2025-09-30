@@ -78,4 +78,13 @@
     <path d="M4.5 15 12 7.5l7.5 7.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
       stroke-linejoin="round" />
   </symbol>
+
+  <symbol id="icon__energy-filled" fill="none" viewBox="0 0 26 26">
+    <path d="M14.4444 0 0 15.6h13L11.5556 26 26 10.4H13L14.4444 0Z" fill="currentColor" />
+  </symbol>
+
+  <symbol id="icon__close" fill="none" viewBox="0 0 20 20">
+    <path d="m6.4645 13.5355 7.071-7.071m0 7.071-7.071-7.071" stroke="currentColor" stroke-linecap="round"
+      stroke-linejoin="round" />
+  </symbol>
 </svg>

@@ -33,6 +33,10 @@
 
   --color-*: initial;
 
+  --color-canvas: #fff;
+  --color-canvas-text: #000;
+  --color-border: #000;
+
   --color-white: #fff;
   --color-black: #000;
 
@@ -105,10 +109,23 @@ body {
   min-width: 320px;
   min-height: 100vh;
   /* background: linear-gradient(171.89deg, #e5f0f8 2.42%, #ebf3f9 96.87%); */
+  @apply bg-canvas text-canvas-text;
+}
+
+dialog::backdrop {
+  /* background-image: linear-gradient(
+    45deg,
+    magenta,
+    rebeccapurple,
+    dodgerblue,
+    green
+  ); */
+  background-color: #000;
+  opacity: 0.75;
 }
 
 @media (prefers-color-scheme: dark) {
-  body {
-    /* background: linear-gradient(171.89deg, #33383d 2.42%, #191b1e 96.87%); */
-  }
+  /* body {
+    background: linear-gradient(171.89deg, #33383d 2.42%, #191b1e 96.87%);
+  } */
 }
