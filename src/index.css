@@ -98,9 +98,8 @@
   @apply bg-canvas text-canvas-text text-body;
 }
 
-body {
-  min-width: 320px;
-  min-height: 100vh;
+html:has(dialog[open]) {
+  overflow: hidden;
 }
 
 dialog::backdrop {

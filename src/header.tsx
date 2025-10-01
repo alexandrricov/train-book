@@ -62,17 +62,6 @@ export function Header() {
   //   }
   // };
 
-  useEffect(() => {
-    const html = document.documentElement;
-    if (open) {
-      const prev = html.style.overflow;
-      html.style.overflow = "hidden";
-      return () => {
-        html.style.overflow = prev;
-      };
-    }
-  }, [open]);
-
   return (
     <header className="border-b border-border w-full mb-2 sticky top-0 bg-canvas z-10">
       <div className="flex items-center justify-between p-4 max-w-150 mx-auto">
@@ -136,7 +125,8 @@ export function Header() {
         // onClick={onClickBackdrop}
         className={clsx(
           "mx-auto mt-auto p-4 rounded-t-2xl shadow-sm border border-border w-full max-w-md bg-canvas",
-          "md:mb-auto md:rounded-b-2xl"
+          "md:mb-auto md:rounded-b-2xl",
+          "max-md:pb-8"
         )}
       >
         <div className="flex items-center justify-between mb-4">
