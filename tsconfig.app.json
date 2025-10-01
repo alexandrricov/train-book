@@ -21,9 +21,8 @@
     "noUnusedParameters": true,
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true,
-
-    "include": ["src", "src/**/*.ts", "src/**/*.tsx"],
-    "exclude": ["dist", "dev-dist", "node_modules"]
-  }
+    "noUncheckedSideEffectImports": true
+  },
+  "include": ["src", "src/**/*.ts", "src/**/*.tsx"],
+  "exclude": ["dist", "dev-dist", "node_modules"]
 }
