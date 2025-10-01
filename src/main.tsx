@@ -1,6 +1,6 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { BrowserRouter, Route, Routes } from "react-router";
+import { BrowserRouter, Route, Routes, Navigate } from "react-router";
 import "./index.css";
 import App from "./App";
 import { AuthProvider } from "./providers/auth";
@@ -19,6 +19,7 @@ createRoot(document.getElementById("root")!).render(
             <Route index element={<Home />} />
             <Route path="history" element={<History />} />
             <Route path="settings" element={<Settings />} />
+            <Route path="*" element={<Navigate to="/" />} />
           </Route>
         </Routes>
       </BrowserRouter>
