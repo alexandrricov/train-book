@@ -1,4 +1,5 @@
 import { Fragment, useEffect, useState } from "react";
+import { useOutletContext } from "react-router";
 import { Button } from "../components/action";
 import { Input } from "../components/input";
 import { Select } from "../components/select";
@@ -11,11 +12,35 @@ import {
 } from "../firebase-db";
 import type { ExerciseType, TargetsAsOf } from "../types";
 import { toDateString } from "../utils/date";
+import { auth } from "../firebase";
+import { signOut, type User } from "firebase/auth";
 
 export function Settings() {
+  const { user } = useOutletContext<{ user: User }>();
+
   return (
     <>
-      <h1 className="text-h1 mb-4">Settings</h1>
+      <h1 className="text-h1 mb-4 sr-only">Settings</h1>
+
+      <section className="section flex gap-2 items-center">
+        <img
+          src={user.photoURL ?? ""}
+          alt={user.displayName ?? "User Avatar"}
+          className="size-10 rounded-full"
+        />
+        <div>
+          <div className="font-bold">{user.displayName}</div>
+          <div>{user.email}</div>
+        </div>
+        <Button
+          variation="secondary"
+          onClick={() => signOut(auth)}
+          className="ml-auto"
+        >
+          Logout
+        </Button>
+      </section>
+
       <Targets />
       <AddTarget />
       <section>

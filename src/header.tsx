@@ -1,5 +1,4 @@
 import { NavLink } from "react-router";
-import { GoogleLoginButton } from "./components/login-button";
 import { Icon } from "./components/icon";
 import { clsx } from "clsx";
 import { useEffect, useRef, useState } from "react";
@@ -10,16 +9,15 @@ import { Select } from "./components/select";
 import { Input } from "./components/input";
 import { Button } from "./components/action";
 import { toDateString } from "./utils/date";
+import { useAuth } from "./providers/auth";
+import { signInWithPopup } from "firebase/auth";
+import { auth, db, googleProvider } from "./firebase";
+import { doc, serverTimestamp, setDoc } from "firebase/firestore";
 // import { Logo } from "./components/logo";
 
 export function Header() {
   const ref = useRef<HTMLDialogElement>(null);
   const [open, setOpen] = useState(false);
-  const [exType, setExType] = useState<ExerciseType>(
-    EXERCISE_ORDER[0] || "pushup"
-  );
-  const [count, setCount] = useState<number>(0);
-  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const el = ref.current;
@@ -55,6 +53,27 @@ export function Header() {
     };
   }, [open]);
 
+  const { user } = useAuth();
+
+  const login = async () => {
+    const res = await signInWithPopup(auth, googleProvider);
+    const u = res.user;
+
+    // create/update user profile (optional)
+    await setDoc(
+      doc(db, "users", u.uid),
+      {
+        uid: u.uid,
+        email: u.email,
+        displayName: u.displayName,
+        photoURL: u.photoURL,
+        lastLoginAt: serverTimestamp(),
+        createdAt: serverTimestamp(),
+      },
+      { merge: true }
+    );
+  };
+
   // const onClickBackdrop: React.MouseEventHandler<HTMLDialogElement> = (e) => {
   //   const el = ref.current;
   //   if (el && e.target === el) {
@@ -75,60 +94,65 @@ export function Header() {
           "max-sm:pt-2 max-sm:pb-[max(16px,env(safe-area-inset-bottom))] max-sm:pl-[max(16px,env(safe-area-inset-left))] max-sm:pr-[max(16px,env(safe-area-inset-right))]"
         )}
       >
-        <nav className="flex justify-center items-stretch">
-          <ul
-            className={clsx(
-              "flex gap-x-4 max-w-150",
-              "[&_:is(a,button)]:flex [&_:is(a,button)]:gap-1 [&_:is(a,button)]:items-center [&_:is(a,button)]:justify-center [&_:is(a,button)]:text-sm [&_:is(a,button)]:hover:text-brand",
-              "max-sm:[&_:is(a,button)]:h-full max-sm:[&_:is(a,button)]:flex-col max-sm:[&_:is(a,button)]:min-w-15"
-            )}
-          >
-            <li>
-              <NavLink
-                to="/"
-                className={({ isActive }) => (isActive ? "text-brand" : "")}
-              >
-                {({ isActive }) => (
-                  <>
-                    <Icon name={isActive ? "house-fill" : "house"} /> Home
-                  </>
-                )}
-              </NavLink>
-            </li>
-            <li>
-              <NavLink
-                to="/history"
-                className={({ isActive }) => (isActive ? "text-brand" : "")}
-              >
-                {({ isActive }) => (
-                  <>
-                    <Icon name={isActive ? "clipboard-fill" : "clipboard"} />{" "}
-                    History
-                  </>
-                )}
-              </NavLink>
-            </li>
-            <li>
-              <NavLink
-                to="/settings"
-                className={({ isActive }) => (isActive ? "text-brand" : "")}
-              >
-                {({ isActive }) => (
-                  <>
-                    <Icon name={isActive ? "gear-fill" : "gear"} /> Settings
-                  </>
-                )}
-              </NavLink>
-            </li>
-            <li>
-              <button type="button" onClick={() => setOpen(!open)}>
-                <Icon name="plus" />
-                Add
-              </button>
-            </li>
-          </ul>
-        </nav>
-        <GoogleLoginButton />
+        {user ? (
+          <nav className="flex justify-center items-stretch w-full">
+            <ul
+              className={clsx(
+                "flex gap-x-4 max-w-150 w-full",
+                "[&_:is(a,button)]:flex [&_:is(a,button)]:gap-1 [&_:is(a,button)]:items-center [&_:is(a,button)]:justify-center [&_:is(a,button)]:text-sm [&_:is(a,button)]:hover:text-brand",
+                "max-sm:[&_:is(a,button)]:h-full max-sm:[&_:is(a,button)]:flex-col max-sm:[&_:is(a,button)]:min-w-15"
+              )}
+            >
+              <li>
+                <NavLink
+                  to="/"
+                  className={({ isActive }) => (isActive ? "text-brand" : "")}
+                >
+                  {({ isActive }) => (
+                    <>
+                      <Icon name={isActive ? "house-fill" : "house"} /> Home
+                    </>
+                  )}
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
+                  to="/history"
+                  className={({ isActive }) => (isActive ? "text-brand" : "")}
+                >
+                  {({ isActive }) => (
+                    <>
+                      <Icon name={isActive ? "clipboard-fill" : "clipboard"} />{" "}
+                      History
+                    </>
+                  )}
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
+                  to="/settings"
+                  className={({ isActive }) => (isActive ? "text-brand" : "")}
+                >
+                  {({ isActive }) => (
+                    <>
+                      <Icon name={isActive ? "gear-fill" : "gear"} /> Settings
+                    </>
+                  )}
+                </NavLink>
+              </li>
+              <li className="ml-auto">
+                <button type="button" onClick={() => setOpen(!open)}>
+                  <Icon name="plus" />
+                  Add
+                </button>
+              </li>
+            </ul>
+          </nav>
+        ) : (
+          <Button variation="primary" onClick={login} className="ml-auto">
+            Login
+          </Button>
+        )}
       </div>
 
       <dialog
@@ -146,56 +170,68 @@ export function Header() {
             <Icon name="close" />
           </button>
         </div>
-        <form
-          className="flex gap-3 items-end"
-          onSubmit={(e) => {
-            e.preventDefault();
-            setLoading(true);
-
-            createItemForCurrentUser({
-              date: toDateString(),
-              type: exType,
-              count,
-            } as SetRow)
-              .then(() => {
-                setCount(0);
-                // setExType(DEFAULT_EXERCISES[0] || "pushup");
-                // setDate(toLocalDateString());
-                ref.current?.close();
-              })
-              .finally(() => setLoading(false));
-          }}
-        >
-          <Select
-            value={exType}
-            onChange={(e) => setExType(e.target.value as ExerciseType)}
-            options={EXERCISE_ORDER.map((key) => ({
-              children: EXERCISE[key].label,
-              value: key,
-            }))}
-            required
-            className="basis-1/1"
-            name="type"
-          >
-            Exercise Type
-          </Select>
-
-          <Input
-            type="number"
-            value={count || ""}
-            onChange={(e) => setCount(Number(e.target.value))}
-            min={1}
-            required
-            className="basis-1/1"
-            name="count"
-          >
-            Count
-          </Input>
-          <Button type="submit" variation="primary" disabled={loading}>
-            Add
-          </Button>
-        </form>
+        <AddForm completeHandler={() => ref.current?.close()} />
       </dialog>
     </header>
+  );
+}
+
+function AddForm({ completeHandler }: { completeHandler: () => void }) {
+  const [exType, setExType] = useState<ExerciseType>(
+    EXERCISE_ORDER[0] || "pushup"
+  );
+  const [count, setCount] = useState<number>(0);
+  const [loading, setLoading] = useState(false);
+
+  return (
+    <form
+      className="flex gap-3 items-end"
+      onSubmit={(e) => {
+        e.preventDefault();
+        setLoading(true);
+
+        createItemForCurrentUser({
+          date: toDateString(),
+          type: exType,
+          count,
+        } as SetRow)
+          .then(() => {
+            setCount(0);
+            // setExType(DEFAULT_EXERCISES[0] || "pushup");
+            // setDate(toLocalDateString());
+            completeHandler();
+          })
+          .finally(() => setLoading(false));
+      }}
+    >
+      <Select
+        value={exType}
+        onChange={(e) => setExType(e.target.value as ExerciseType)}
+        options={EXERCISE_ORDER.map((key) => ({
+          children: EXERCISE[key].label,
+          value: key,
+        }))}
+        required
+        className="basis-1/1"
+        name="type"
+      >
+        Exercise Type
+      </Select>
+
+      <Input
+        type="number"
+        value={count || ""}
+        onChange={(e) => setCount(Number(e.target.value))}
+        min={1}
+        required
+        className="basis-1/1"
+        name="count"
+      >
+        Count
+      </Input>
+      <Button type="submit" variation="primary" disabled={loading}>
+        Add
+      </Button>
+    </form>
   );
 }
