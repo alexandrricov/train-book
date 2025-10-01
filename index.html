@@ -11,8 +11,10 @@
   <link rel="preload" href="%BASE_URL%icons-sprite.svg" as="image" type="image/svg+xml" />
 </head>
 
-<body class="min-w-80 min-h-100dvh">
-  <div id="root"></div>
+<body class="min-w-80 overflow-hidden">
+  <div id="root"
+    class="h-full min-h-100dvh grid [grid-template-areas:'main''header'] sm:[grid-template-areas:'header''main'] grid-rows-[1fr_auto] sm:grid-rows-[auto_1fr]">
+  </div>
   <script type="module" src="/src/main.tsx"></script>
 </body>
 

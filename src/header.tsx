@@ -1,4 +1,4 @@
-import { Link, NavLink } from "react-router";
+import { NavLink } from "react-router";
 import { GoogleLoginButton } from "./components/login-button";
 import { Icon } from "./components/icon";
 import { clsx } from "clsx";
@@ -10,7 +10,7 @@ import { Select } from "./components/select";
 import { Input } from "./components/input";
 import { Button } from "./components/action";
 import { toDateString } from "./utils/date";
-import { Logo } from "./components/logo";
+// import { Logo } from "./components/logo";
 
 export function Header() {
   const ref = useRef<HTMLDialogElement>(null);
@@ -63,23 +63,19 @@ export function Header() {
   // };
 
   return (
-    <header className="border-b border-border w-full mb-2 sticky top-0 bg-canvas z-10">
+    <header
+      className={clsx(
+        "max-sm:border-t sm:border-b border-border w-full bg-canvas z-10"
+      )}
+      style={{ gridArea: "header" }}
+    >
       <div className="flex items-center justify-between p-4 max-w-150 mx-auto">
-        <Link to="/" className="flex items-center text-brand">
-          <Logo className="h-10 w-auto" />
-        </Link>
-        <nav
-          className={clsx(
-            "w-full flex justify-center items-stretch",
-            "max-sm:fixed max-sm:bottom-0 max-sm:left-0 max-sm:right-0 max-sm:shadow-[0_-1px_0_0_rgba(0,0,0,1)] max-sm:py-2 max-sm:z-10 max-sm:bg-canvas",
-            "sm:w-auto"
-          )}
-        >
+        <nav className="flex justify-center items-stretch">
           <ul
             className={clsx(
               "flex gap-x-4 max-w-150",
               "[&_:is(a,button)]:flex [&_:is(a,button)]:gap-1 [&_:is(a,button)]:items-center [&_:is(a,button)]:justify-center [&_:is(a,button)]:text-sm [&_:is(a,button)]:hover:text-brand",
-              "max-sm:[&_:is(a,button)]:h-full max-sm:[&_:is(a,button)]:flex-col"
+              "max-sm:[&_:is(a,button)]:h-full max-sm:[&_:is(a,button)]:flex-col max-sm:[&_:is(a,button)]:min-w-15"
             )}
           >
             <li>

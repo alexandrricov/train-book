@@ -8,26 +8,22 @@ function App() {
   return (
     <>
       <Header />
-      <main className="max-w-150 mx-auto px-4 w-full max-sm:mb-20">
-        {user ? (
-          <>
-            <Outlet />
-          </>
-        ) : loading ? (
-          <div className="text-center">Loading...</div>
-        ) : (
-          <div className="text-center">
-            <h2 className="text-2xl font-bold mb-4">Welcome to TrainBook</h2>
-            <p>Please log in to start tracking your workouts.</p>
-          </div>
-        )}
-      </main>
-      {/* <footer className="w-full max-sm:mb-10">
-        <div className="max-w-150 mx-auto p-4 text-xs text-gray-500 ">
-          <p>Copyright &copy; 2025</p>
-          <p>Open source, from Alexandr Rîcov with ❤️</p>
+      <main className="overflow-y-auto" style={{ gridArea: "main" }}>
+        <div className="max-w-150 mx-auto px-4 py-4">
+          {user ? (
+            <>
+              <Outlet />
+            </>
+          ) : loading ? (
+            <div className="text-center">Loading...</div>
+          ) : (
+            <div className="text-center">
+              <h2 className="text-2xl font-bold mb-4">Welcome to TrainBook</h2>
+              <p>Please log in to start tracking your workouts.</p>
+            </div>
+          )}
         </div>
-      </footer> */}
+      </main>
     </>
   );
 }

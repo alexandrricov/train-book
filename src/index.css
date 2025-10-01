@@ -95,12 +95,17 @@
 
   accent-color: var(--color-brand);
 
-  @apply bg-canvas text-canvas-text text-body;
+  @apply bg-gradient-to-br sm:bg-gradient-to-tr from-canvas via-canvas to-canvas-text/10 text-canvas-text text-body;
 }
 
-html:has(dialog[open]) {
-  overflow: hidden;
+html,
+body {
+  height: 100dvh;
 }
+
+/* html:has(dialog[open]) {
+  overflow: hidden;
+} */
 
 dialog::backdrop {
   @apply bg-canvas/10;

@@ -104,9 +104,12 @@ function buttonStyles({
       "hover:bg-canvas2 hover:text-canvas-text",
       isActive && "",
     ],
-    size === "large" && `${iconPosition === "only" ? "p-3" : "px-6 py-3"}`,
-    size === "medium" && `${iconPosition === "only" ? "p-2" : "px-4 py-2"}`,
-    size === "small" && `${iconPosition === "only" ? "p-1" : "px-2 py-1"}`
+    size === "large" &&
+      `${iconPosition === "only" ? "p-3" : "px-6 py-3"} text-body leading-6`,
+    size === "medium" &&
+      `${iconPosition === "only" ? "p-2" : "px-4 py-2"} text-body leading-6`,
+    size === "small" &&
+      `${iconPosition === "only" ? "p-1" : "px-2 py-1"} text-body leading-6`
   );
 }
 

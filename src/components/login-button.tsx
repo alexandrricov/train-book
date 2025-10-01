@@ -32,7 +32,7 @@ export function GoogleLoginButton() {
   if (loading) return <div>Loading...</div>;
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-2 shrink-0">
       {user ? (
         <>
           <Dropdown
