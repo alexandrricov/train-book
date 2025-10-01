@@ -2,9 +2,12 @@ import { clsx } from "clsx";
 
 export type IconName =
   | "loading"
-  | "home"
-  | "notebook"
+  | "house"
+  | "house-fill"
+  | "clipboard"
+  | "clipboard-fill"
   | "gear"
+  | "gear-fill"
   | "pushup"
   | "pullup"
   | "abs"

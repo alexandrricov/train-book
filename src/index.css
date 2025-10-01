@@ -1,70 +1,29 @@
 @import "tailwindcss";
 
 @theme {
-  /* --text-heading-xl: 27px;
-  --text-heading-xl--line-height: 1;
-  --text-heading-l: 24px;
-  --text-heading-l--line-height: 1;
-  --text-heading-m: 22px;
-  --text-heading-m--line-height: 1;
-  --text-heading-s: 17px;
-  --text-heading-s--line-height: 1;
-  --text-heading-xs: 15px;
-  --text-heading-xs--line-height: 1;
-  --text-heading-xxs: 13px;
-  --text-heading-xxs--line-height: 1.2;
-  --text-heading-xxxs: 11px;
-  --text-heading-xxxs--line-height: 1.2;
-
-  --text-body-xl: 27px;
-  --text-body-xl--line-height: 1;
-  --text-body-l: 24px;
-  --text-body-l--line-height: 1;
-  --text-body-m: 22px;
-  --text-body-m--line-height: 1.2;
-  --text-body-s: 17px;
-  --text-body-s--line-height: 1.2;
-  --text-body-xs: 15px;
-  --text-body-xs--line-height: 1.2;
-  --text-body-xxs: 13px;
-  --text-body-xxs--line-height: 1.2;
-  --text-body-xxxs: 11px;
-  --text-body-xxxs--line-height: 1.2; */
-
   --color-*: initial;
 
-  --color-white: #fff;
-  --color-black: #000;
-
-  --color-primary-50: #e1d9ff;
-  --color-primary-100: #cdc0ff;
-  --color-primary-200: #b3a0ff;
-  --color-primary-300: #9a81ff;
-  --color-primary-400: #8162ff;
-  --color-primary-500: #6842ff;
-  --color-primary-600: #5737d4;
-  --color-primary-700: #452caa;
-  --color-primary-800: #342180;
-  --color-primary-900: #231655;
-
   --color-grey-0: #fff;
-  --color-grey-50: #f8fafc;
-  --color-grey-100: #f2f5f9;
-  --color-grey-200: #e3e8ef;
-  --color-grey-300: #cdd5e0;
-  --color-grey-400: #97a3b6;
-  --color-grey-500: #677489;
-  --color-grey-600: #4a5567;
-  --color-grey-700: #364153;
-  --color-grey-800: #20293a;
-  --color-grey-900: #111729;
+  --color-grey-50: color-mix(in oklab, var(--color-grey-500), white 95%);
+  --color-grey-100: color-mix(in oklab, var(--color-grey-500), white 90%);
+  --color-grey-200: color-mix(in oklab, var(--color-grey-500), white 80%);
+  --color-grey-300: color-mix(in oklab, var(--color-grey-500), white 70%);
+  --color-grey-400: color-mix(in oklab, var(--color-grey-500), white 60%);
+  --color-grey-500: oklch(82% 0.05 250);
+  --color-grey-600: color-mix(in oklab, var(--color-grey-500), black 10%);
+  --color-grey-700: color-mix(in oklab, var(--color-grey-500), black 20%);
+  --color-grey-800: color-mix(in oklab, var(--color-grey-500), black 30%);
+  --color-grey-900: color-mix(in oklab, var(--color-grey-500), black 40%);
+  --color-grey-950: color-mix(in oklab, var(--color-grey-500), black 50%);
+  --color-grey-1000: #000;
 
   --color-canvas: light-dark(var(--color-grey-50), var(--color-grey-900));
   --color-canvas2: light-dark(var(--color-grey-100), var(--color-grey-800));
   --color-canvas-text: light-dark(var(--color-grey-900), var(--color-grey-50));
   --color-border: light-dark(var(--color-grey-200), var(--color-grey-600));
 
-  --color-brand: light-dark(var(--color-primary-500), var(--color-primary-400));
+  /* --color-brand: light-dark(var(--color-primary-500), var(--color-primary-400)); */
+  --color-brand: #3881ff;
   --color-brand-light: color-mix(in oklab, var(--color-brand), white 10%);
   --color-brand-dark: color-mix(in oklab, var(--color-brand), black 10%);
 

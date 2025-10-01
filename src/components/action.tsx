@@ -94,7 +94,7 @@ function buttonStyles({
     "cursor-pointer  [transition:all_150ms_ease-out]",
     disabled && ["cursor-not-allowed opacity-50 pointer-events-none"],
     variation === "primary" && [
-      "rounded-lg bg-brand text-white",
+      "rounded-lg bg-brand text-grey-0",
       "hover:bg-brand-light",
       "active:bg-brand-dark",
       isActive && "",

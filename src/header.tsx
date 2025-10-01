@@ -69,7 +69,12 @@ export function Header() {
       )}
       style={{ gridArea: "header" }}
     >
-      <div className="flex items-center justify-between p-4 max-w-150 mx-auto">
+      <div
+        className={clsx(
+          "flex items-center justify-between p-4 max-w-150 mx-auto",
+          "max-sm:pt-2 max-sm:pb-[max(16px,env(safe-area-inset-bottom))] max-sm:pl-[max(16px,env(safe-area-inset-left))] max-sm:pr-[max(16px,env(safe-area-inset-right))]"
+        )}
+      >
         <nav className="flex justify-center items-stretch">
           <ul
             className={clsx(
@@ -83,8 +88,11 @@ export function Header() {
                 to="/"
                 className={({ isActive }) => (isActive ? "text-brand" : "")}
               >
-                <Icon name="home" />
-                Home
+                {({ isActive }) => (
+                  <>
+                    <Icon name={isActive ? "house-fill" : "house"} /> Home
+                  </>
+                )}
               </NavLink>
             </li>
             <li>
@@ -92,8 +100,12 @@ export function Header() {
                 to="/history"
                 className={({ isActive }) => (isActive ? "text-brand" : "")}
               >
-                <Icon name="notebook" />
-                History
+                {({ isActive }) => (
+                  <>
+                    <Icon name={isActive ? "clipboard-fill" : "clipboard"} />{" "}
+                    History
+                  </>
+                )}
               </NavLink>
             </li>
             <li>
@@ -101,8 +113,11 @@ export function Header() {
                 to="/settings"
                 className={({ isActive }) => (isActive ? "text-brand" : "")}
               >
-                <Icon name="gear" />
-                Settings
+                {({ isActive }) => (
+                  <>
+                    <Icon name={isActive ? "gear-fill" : "gear"} /> Settings
+                  </>
+                )}
               </NavLink>
             </li>
             <li>
