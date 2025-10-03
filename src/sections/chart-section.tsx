@@ -310,7 +310,7 @@ export function ChartSection() {
             <Legend
               content={({ payload }) => {
                 return (
-                  <ul className="flex gap-2 items-center justify-center">
+                  <ul className="flex flex-wrap gap-2 items-center justify-center">
                     {(payload as LegendPayload[])
                       ?.sort((a: LegendPayload, b: LegendPayload) => {
                         const orderA = EXERCISE_ORDER.indexOf(
@@ -331,7 +331,7 @@ export function ChartSection() {
                         >
                           <Icon
                             name={entry.value as ExerciseType}
-                            className="size-5 max-sm:sr-only"
+                            className="size-5"
                             style={{
                               color:
                                 EXERCISE[entry.value as ExerciseType].color,
