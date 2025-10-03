@@ -6,7 +6,7 @@ export function Select({
   className,
   ...props
 }: {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   options: { value: string; children: React.ReactNode }[];
 } & React.SelectHTMLAttributes<HTMLSelectElement>) {
   return (
@@ -16,9 +16,11 @@ export function Select({
         className
       )}
     >
-      <span className="absolute left-1 transform -translate-y-1/2 text-gray-500 bg-canvas p-0.5 pointer-events-none whitespace-nowrap text-xs">
-        {children}
-      </span>
+      {children && (
+        <span className="absolute left-1 transform -translate-y-1/2 text-gray-500 bg-canvas p-0.5 pointer-events-none whitespace-nowrap text-xs">
+          {children}
+        </span>
+      )}
       <select className="w-full p-2 appearance-none h-9.5" {...props}>
         {options.map((option) => (
           <option key={option.value} value={option.value}>

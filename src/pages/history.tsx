@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { type ExerciseType, type SetRow } from "../types";
-import { deleteMyItem, subscribeMyItems } from "../firebase-db";
+import { deleteMyItem, subscribeItems } from "../firebase-db";
 import { EXERCISE, EXERCISE_ORDER } from "../exercises";
 import { AddSection } from "../sections/add-section";
 import { Icon } from "../components/icon";
@@ -10,10 +10,10 @@ export function History() {
   const [items, setItems] = useState<SetRow[]>([]);
 
   useEffect(() => {
-    const unsubItems = subscribeMyItems(setItems);
+    const unsubscribe = subscribeItems(setItems);
 
     return () => {
-      unsubItems();
+      unsubscribe();
     };
   }, []);
 
@@ -74,7 +74,9 @@ export function History() {
               <details className="open:[&>summary>svg]:rotate-180">
                 <summary className="cursor-pointer mb-2 flex justify-between items-center">
                   <div className="flex items-center gap-2">
-                    <h3 className="text-h3">{d}</h3>
+                    <h3 className="text-h3">
+                      {new Date(d).toLocaleDateString()}
+                    </h3>
                     <div className="flex">
                       {Object.entries(groupedItems[d])
                         .sort(([a], [b]) => {

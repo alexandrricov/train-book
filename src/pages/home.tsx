@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { subscribeTargets } from "../firebase-db";
 import { toDateString } from "../utils/date";
 
-import { subscribeTodayItems } from "../firebase-db";
+import { subscribeItems } from "../firebase-db";
 import type { ExerciseType, SetRow, TargetsAsOf } from "../types";
 import { EXERCISE, EXERCISE_ORDER } from "../exercises";
 import { ProgressIcon, type IconName } from "../components/icon";
@@ -23,10 +23,10 @@ export function TodayProgress() {
   const [targets, setTargets] = useState<TargetsAsOf>({});
 
   useEffect(() => {
-    const unsubItems = subscribeTodayItems(setItems);
+    const unsubscribe = subscribeItems(setItems, toDateString(new Date()));
 
     return () => {
-      unsubItems();
+      unsubscribe();
     };
   }, []);
 
@@ -52,7 +52,7 @@ export function TodayProgress() {
       {Object.entries(groupedItems).length === 0 ? (
         <p className="text-gray-500">No exercises logged today.</p>
       ) : (
-        <ul className="list-disc pl-5">
+        <ul>
           {Object.entries(groupedItems)
             .sort(([a], [b]) => {
               const orderA = EXERCISE_ORDER.indexOf(a as ExerciseType);
@@ -65,11 +65,14 @@ export function TodayProgress() {
               const target = targets[type as ExerciseType]?.value;
 
               return (
-                <li key={type} className="mb-2 flex items-center gap-2">
+                <li
+                  key={type}
+                  className="not-last:mb-2 flex items-center gap-2"
+                >
                   <span className="font-medium">
                     {EXERCISE[type as ExerciseType].label}:
                   </span>
-                  {counts.join(", ")} (Total: {total}
+                  {counts.join(", ")} ({total}
                   {target ? ` / ${target}` : ""})
                   {target && (
                     <ProgressIcon
@@ -77,7 +80,7 @@ export function TodayProgress() {
                       progress={total / target}
                       style={{ color: exercice.color }}
                       className="ml-auto"
-                      size={40}
+                      size={32}
                     />
                   )}
                 </li>

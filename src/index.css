@@ -20,7 +20,7 @@
   --color-canvas: light-dark(var(--color-grey-50), var(--color-grey-900));
   --color-canvas2: light-dark(var(--color-grey-100), var(--color-grey-800));
   --color-canvas-text: light-dark(var(--color-grey-900), var(--color-grey-50));
-  --color-border: light-dark(var(--color-grey-200), var(--color-grey-600));
+  --color-border: light-dark(var(--color-grey-300), var(--color-grey-600));
 
   /* --color-brand: light-dark(var(--color-primary-500), var(--color-primary-400)); */
   --color-brand: #3881ff;

@@ -139,6 +139,7 @@ function AddTarget() {
         </Select>
         <Input
           type="number"
+          inputMode="numeric"
           value={count || ""}
           onChange={(e) => setCount(Number(e.target.value))}
           min={1}

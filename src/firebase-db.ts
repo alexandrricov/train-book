@@ -18,7 +18,6 @@ import { auth, db } from "./firebase";
 import {
   type ExerciseType,
   type SetRow,
-  type SetRowDB,
   type TargetRowDB,
   type TargetsAsOf,
 } from "./types";
@@ -43,12 +42,13 @@ export async function listMyItemsOnce() {
   return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
 }
 
-export function subscribeMyItems(cb: (items: SetRow[]) => void) {
+export function subscribeItems(cb: (items: SetRow[]) => void, date?: string) {
   const uid = auth.currentUser?.uid;
   if (!uid) throw new Error("Not authenticated");
   const q = query(
     collection(db, "users", uid, "items"),
-    orderBy("createdAt", "desc")
+    orderBy("createdAt", "desc"),
+    ...(date ? [where("date", ">=", date)] : [])
   );
   return onSnapshot(q, (snap) => {
     // console.log(
@@ -56,33 +56,6 @@ export function subscribeMyItems(cb: (items: SetRow[]) => void) {
     //   snap.docs.map((d) => ({ id: d.id, ...d.data() }))
     // );
     cb(snap.docs.map((d) => ({ id: d.id, ...d.data() })) as SetRow[]);
-  });
-}
-
-function getTodayYMD(): string {
-  const now = new Date();
-  const y = now.getFullYear();
-  const m = String(now.getMonth() + 1).padStart(2, "0");
-  const d = String(now.getDate()).padStart(2, "0");
-  return `${y}-${m}-${d}`;
-}
-
-export function subscribeTodayItems(cb: (rows: SetRowDB[]) => void) {
-  const uid = auth.currentUser?.uid;
-  if (!uid) throw new Error("Not authenticated");
-
-  const today = getTodayYMD();
-  const q = query(
-    collection(db, "users", uid, "items"),
-    where("date", "==", today)
-  );
-
-  return onSnapshot(q, (snap) => {
-    const rows = snap.docs.map((d) => ({
-      id: d.id,
-      ...d.data(),
-    })) as SetRowDB[];
-    cb(rows);
   });
 }
 
