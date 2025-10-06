@@ -18,6 +18,7 @@ import { auth, db } from "./firebase";
 import {
   type ExerciseType,
   type SetRow,
+  type SetRowDB,
   type TargetRowDB,
   type TargetsAsOf,
 } from "./types";
@@ -42,7 +43,7 @@ export async function listMyItemsOnce() {
   return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
 }
 
-export function subscribeItems(cb: (items: SetRow[]) => void, date?: string) {
+export function subscribeItems(cb: (items: SetRowDB[]) => void, date?: string) {
   const uid = auth.currentUser?.uid;
   if (!uid) throw new Error("Not authenticated");
   const q = query(
@@ -55,7 +56,7 @@ export function subscribeItems(cb: (items: SetRow[]) => void, date?: string) {
     //   "Snapshot received",
     //   snap.docs.map((d) => ({ id: d.id, ...d.data() }))
     // );
-    cb(snap.docs.map((d) => ({ id: d.id, ...d.data() })) as SetRow[]);
+    cb(snap.docs.map((d) => ({ id: d.id, ...d.data() })) as SetRowDB[]);
   });
 }
 

@@ -4,7 +4,7 @@ import { subscribeTargets } from "../firebase-db";
 import { toDateString } from "../utils/date";
 
 import { subscribeItems } from "../firebase-db";
-import type { ExerciseType, SetRow, TargetsAsOf } from "../types";
+import type { ExerciseType, SetRowDB, TargetsAsOf } from "../types";
 import { EXERCISE, EXERCISE_ORDER } from "../exercises";
 import { ProgressIcon, type IconName } from "../components/icon";
 
@@ -19,7 +19,7 @@ export function Home() {
 }
 
 export function TodayProgress() {
-  const [items, setItems] = useState<SetRow[]>([]);
+  const [items, setItems] = useState<SetRowDB[]>([]);
   const [targets, setTargets] = useState<TargetsAsOf>({});
 
   useEffect(() => {
@@ -38,54 +38,69 @@ export function TodayProgress() {
     };
   }, []);
 
-  const groupedItems = useMemo(() => {
-    return items.reduce((acc, item) => {
+  const groupedItems: [ExerciseType, SetRowDB[]][] = useMemo(() => {
+    const _ = items.reduce((acc, item) => {
       if (!acc[item.type]) acc[item.type] = [];
-      acc[item.type].push(item.count);
+      acc[item.type].push(item);
       return acc;
-    }, {} as Record<ExerciseType, SetRow["count"][]>);
+    }, {} as Record<ExerciseType, SetRowDB[]>);
+
+    return Object.entries(_)
+      .sort(([a], [b]) => {
+        const orderA = EXERCISE_ORDER.indexOf(a as ExerciseType);
+        const orderB = EXERCISE_ORDER.indexOf(b as ExerciseType);
+        return orderA - orderB;
+      })
+      .map(([k, v]) => {
+        return [
+          k as ExerciseType,
+          v.sort(
+            (a, b) =>
+              a.createdAt.toDate().getTime() - b.createdAt.toDate().getTime()
+          ),
+        ];
+      });
   }, [items]);
 
   return (
     <section className="p-4 rounded-2xl border border-border mb-6">
       <h2 className="text-h2 mb-3">Today's Progress</h2>
-      {Object.entries(groupedItems).length === 0 ? (
+      {groupedItems.length === 0 ? (
         <p className="text-gray-500">No exercises logged today.</p>
       ) : (
         <ul>
-          {Object.entries(groupedItems)
-            .sort(([a], [b]) => {
-              const orderA = EXERCISE_ORDER.indexOf(a as ExerciseType);
-              const orderB = EXERCISE_ORDER.indexOf(b as ExerciseType);
-              return orderA - orderB;
-            })
-            .map(([type, counts]) => {
-              const exercice = EXERCISE[type as ExerciseType];
-              const total = counts.reduce((a, b) => a + b, 0);
-              const target = targets[type as ExerciseType]?.value;
+          {groupedItems.map(([type, exercises]) => {
+            const exercise = EXERCISE[type as ExerciseType];
+            const total = exercises.reduce((a, b) => a + b.count, 0);
+            const target = targets[type as ExerciseType]?.value;
 
-              return (
-                <li
-                  key={type}
-                  className="not-last:mb-2 flex items-center gap-2"
-                >
-                  <span className="font-medium">
-                    {EXERCISE[type as ExerciseType].label}:
-                  </span>
-                  {counts.join(", ")} ({total}
-                  {target ? ` / ${target}` : ""})
-                  {target && (
-                    <ProgressIcon
-                      name={type as IconName}
-                      progress={total / target}
-                      style={{ color: exercice.color }}
-                      className="ml-auto"
-                      size={32}
-                    />
-                  )}
-                </li>
-              );
-            })}
+            return (
+              <li key={type} className="not-last:mb-2 flex items-center gap-2">
+                <span className="font-medium">
+                  {EXERCISE[type as ExerciseType].label}:
+                </span>
+                {exercises
+                  .sort(
+                    (a, b) =>
+                      a.createdAt.toDate().getTime() -
+                      b.createdAt.toDate().getTime()
+                  )
+                  .map((c) => c.count)
+                  .join(", ")}{" "}
+                ({total}
+                {target ? ` / ${target}` : ""})
+                {target && (
+                  <ProgressIcon
+                    name={type as IconName}
+                    progress={total / target}
+                    style={{ color: exercise.color }}
+                    className="ml-auto"
+                    size={32}
+                  />
+                )}
+              </li>
+            );
+          })}
         </ul>
       )}
     </section>

@@ -10,6 +10,10 @@ export type SetRow = {
   count: number;
 };
 
+export type SetRowDB = SetRow & {
+  createdAt: Timestamp;
+};
+
 export type TargetRow = {
   type: ExerciseType;
   value: number;
