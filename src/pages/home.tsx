@@ -56,7 +56,7 @@ export function TodayProgress() {
           k as ExerciseType,
           v.sort(
             (a, b) =>
-              a.createdAt.toDate().getTime() - b.createdAt.toDate().getTime()
+              a.createdAt?.toDate().getTime() - b.createdAt?.toDate().getTime()
           ),
         ];
       });
@@ -82,8 +82,8 @@ export function TodayProgress() {
                 {exercises
                   .sort(
                     (a, b) =>
-                      a.createdAt.toDate().getTime() -
-                      b.createdAt.toDate().getTime()
+                      a.createdAt?.toDate().getTime() -
+                      b.createdAt?.toDate().getTime()
                   )
                   .map((c) => c.count)
                   .join(", ")}{" "}
