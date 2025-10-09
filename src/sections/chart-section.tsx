@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
-import type { SetRow, ExerciseType } from "../types";
-import { subscribeItems } from "../firebase-db";
+import type { SetRow, ExerciseType, TargetsAsOf } from "../types";
+import { subscribeItems, subscribeTargets } from "../firebase-db";
 import {
   CartesianGrid,
   Legend,
   Line,
   LineChart,
+  ReferenceLine,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -82,6 +83,7 @@ export function ChartSection() {
     PeriodTabsKey.month
   );
   const [items, setItems] = useState<SetRow[]>([]);
+  const [targets, setTargets] = useState<TargetsAsOf>({});
 
   useEffect(() => {
     let days;
@@ -117,6 +119,14 @@ export function ChartSection() {
       unsubItems();
     };
   }, [periodFilter]);
+
+  useEffect(() => {
+    const unsubscribeTargets = subscribeTargets(toDateString(), setTargets);
+
+    return () => {
+      unsubscribeTargets();
+    };
+  }, []);
 
   const [dates, types] = useMemo(() => {
     if (items.length === 0) return [[], []];
@@ -250,6 +260,18 @@ export function ChartSection() {
                 dot={{ fill: "var(--color-canvas)" }}
                 activeDot={{ stroke: "var(--color-canvas)" }}
                 connectNulls
+              />
+            ))}
+            {Object.entries(targets).map(([type, data]) => (
+              <ReferenceLine
+                key={type}
+                y={data.value}
+                // xAxisId="left"
+                // label={`${EXERCISE[type as ExerciseType].label} target (${
+                //   data.value
+                // })`}
+                strokeDasharray="2 6"
+                stroke={EXERCISE[type as ExerciseType].color}
               />
             ))}
             <Tooltip
