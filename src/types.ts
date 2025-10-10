@@ -15,6 +15,7 @@ export type SetRowDB = SetRow & {
 };
 
 export type TargetRow = {
+  id: string;
   type: ExerciseType;
   value: number;
   date: string;

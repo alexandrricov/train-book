@@ -270,7 +270,7 @@ export function ChartSection() {
                 // label={`${EXERCISE[type as ExerciseType].label} target (${
                 //   data.value
                 // })`}
-                strokeDasharray="2 6"
+                strokeDasharray="6 6"
                 stroke={EXERCISE[type as ExerciseType].color}
               />
             ))}
