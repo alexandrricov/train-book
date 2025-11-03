@@ -28,11 +28,7 @@ export function History() {
   }, [items]);
 
   const itemsGroupedByDate = useMemo(() => {
-    return items.reduce((acc, item) => {
-      if (!acc[item.date]) acc[item.date] = [] as SetRow[];
-      acc[item.date].push(item);
-      return acc;
-    }, {} as Record<string, SetRow[]>);
+    return Object.groupBy(items, (i) => i.date) as Record<string, SetRow[]>;
   }, [items]);
 
   // every day from today to smallest date

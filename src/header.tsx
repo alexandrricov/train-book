@@ -69,18 +69,18 @@ export function Header() {
           "max-sm:pt-2 max-sm:pb-[max(16px,env(safe-area-inset-bottom))] max-sm:pl-[max(16px,env(safe-area-inset-left))] max-sm:pr-[max(16px,env(safe-area-inset-right))]"
         )}
       >
-        <nav className="flex justify-center items-stretch w-full">
-          <ul
-            className={clsx(
-              "flex gap-x-4 max-w-150 w-full",
-              "[&_:is(a,button)]:flex [&_:is(a,button)]:gap-1 [&_:is(a,button)]:items-center [&_:is(a,button)]:justify-center [&_:is(a,button)]:text-sm [&_:is(a,button)]:hover:text-brand",
-              "max-sm:[&_:is(a,button)]:h-full max-sm:[&_:is(a,button)]:flex-col max-sm:[&_:is(a,button)]:min-w-15"
-            )}
-          >
+        <nav
+          className={clsx(
+            "flex justify-center items-stretch w-full",
+            "[&_:is(a,button)]:flex [&_:is(a,button)]:p-2 [&_:is(a,button)]:gap-1 [&_:is(a,button)]:items-center [&_:is(a,button)]:justify-center [&_:is(a,button)]:text-sm [&_:is(a,button)]:transition-colors",
+            "max-sm:[&_:is(a,button)]:h-full max-sm:[&_:is(a,button)]:flex-col max-sm:[&_:is(a,button)]:min-w-15"
+          )}
+        >
+          <ul className={clsx("max-w-150 w-full fancy-nav")}>
             <li>
               <NavLink
                 to="/"
-                className={({ isActive }) => (isActive ? "text-brand" : "")}
+                className={({ isActive }) => (isActive ? "text-grey-0" : "")}
               >
                 {({ isActive }) => (
                   <>
@@ -92,7 +92,7 @@ export function Header() {
             <li>
               <NavLink
                 to="/history"
-                className={({ isActive }) => (isActive ? "text-brand" : "")}
+                className={({ isActive }) => (isActive ? "text-grey-0" : "")}
               >
                 {({ isActive }) => (
                   <>
@@ -105,7 +105,7 @@ export function Header() {
             <li>
               <NavLink
                 to="/settings"
-                className={({ isActive }) => (isActive ? "text-brand" : "")}
+                className={({ isActive }) => (isActive ? "text-grey-0" : "")}
               >
                 {({ isActive }) => (
                   <>
@@ -114,13 +114,15 @@ export function Header() {
                 )}
               </NavLink>
             </li>
-            <li className="ml-auto">
-              <button type="button" onClick={() => setOpen(!open)}>
-                <Icon name="plus" />
-                Add
-              </button>
-            </li>
           </ul>
+          <button
+            type="button"
+            onClick={() => setOpen(!open)}
+            className="ml-auto hover:text-brand"
+          >
+            <Icon name="plus" />
+            Add
+          </button>
         </nav>
       </div>
 

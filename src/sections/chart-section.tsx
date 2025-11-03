@@ -130,29 +130,18 @@ export function ChartSection() {
 
   const [dates, types] = useMemo(() => {
     if (items.length === 0) return [[], []];
-    const ds = items.reduce<SetRow["date"][]>((acc, it) => {
-      let d: string | null = null;
-      if (typeof it.date === "string" && /^\d{4}-\d{2}-\d{2}$/.test(it.date)) {
-        d = it.date;
-      }
 
-      if (d && !acc.includes(d)) acc.push(d);
-      return acc;
-    }, []);
-    ds.sort((a, b) => (a < b ? -1 : a > b ? 1 : 0));
+    const _dates = [...new Set(items.map((item) => item.date))].sort((a, b) =>
+      a < b ? -1 : a > b ? 1 : 0
+    );
 
-    const types = items
-      .reduce<SetRow["type"][]>((acc, it) => {
-        if (it.type && !acc.includes(it.type)) acc.push(it.type);
-        return acc;
-      }, [])
-      .sort((a, b) => {
-        const orderA = EXERCISE_ORDER.indexOf(a as ExerciseType);
-        const orderB = EXERCISE_ORDER.indexOf(b as ExerciseType);
-        return orderA - orderB;
-      });
+    const _types = [...new Set(items.map((item) => item.type))].sort((a, b) => {
+      const orderA = EXERCISE_ORDER.indexOf(a as ExerciseType);
+      const orderB = EXERCISE_ORDER.indexOf(b as ExerciseType);
+      return orderA < orderB ? -1 : orderA > orderB ? 1 : 0;
+    });
 
-    return [ds, types];
+    return [_dates, _types];
   }, [items]);
 
   function groupItemsByDateAndType(items: SetRow[]): DailyTotals[] {

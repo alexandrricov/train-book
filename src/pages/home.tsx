@@ -39,11 +39,7 @@ export function TodayProgress() {
   }, []);
 
   const groupedItems: [ExerciseType, SetRowDB[]][] = useMemo(() => {
-    const _ = items.reduce((acc, item) => {
-      if (!acc[item.type]) acc[item.type] = [];
-      acc[item.type].push(item);
-      return acc;
-    }, {} as Record<ExerciseType, SetRowDB[]>);
+    const _ = Object.groupBy(items, (i) => i.type);
 
     return Object.entries(_)
       .sort(([a], [b]) => {

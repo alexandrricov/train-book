@@ -75,4 +75,48 @@ dialog::backdrop {
   .section {
     @apply p-4 rounded-2xl border border-border mb-6;
   }
+
+  .fancy-nav {
+    --padding: 8px;
+    @apply flex;
+
+    &::before {
+      content: "";
+      position: absolute;
+      position-anchor: --li-hover;
+      inset: calc(anchor(start)) calc(anchor(end) + var(--padding))
+        calc(anchor(end)) calc(anchor(start) + var(--padding));
+      @apply bg-grey-300;
+      transition: 0.2s 0.2s;
+      pointer-events: none;
+      border-radius: 8px;
+    }
+    &::after {
+      content: "";
+      position: absolute;
+      position-anchor: --li-active;
+      inset: calc(anchor(start)) calc(anchor(end) + var(--padding))
+        calc(anchor(end)) calc(anchor(start) + var(--padding));
+      @apply bg-brand;
+      transition: 0.2s 0.2s;
+      pointer-events: none;
+      border-radius: 8px;
+    }
+    & li {
+      padding-inline: var(--padding);
+      z-index: 1;
+      anchor-name: var(--anchor-name-hover, --noop-hover),
+        var(--anchor-name-active, --noop-active);
+    }
+    & li:hover {
+      --anchor-name-hover: --li-hover;
+    }
+    & li:has([aria-current="page"]) {
+      --anchor-name-active: --li-active;
+      --anchor-name-hover: --li-hover;
+    }
+    &:has(li:hover) li:has([aria-current="page"]):not(:hover) {
+      anchor-name: var(--anchor-name-active, --noop-active);
+    }
+  }
 }
