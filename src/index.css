@@ -80,27 +80,24 @@ dialog::backdrop {
     --padding: 8px;
     @apply flex;
 
-    &::before {
-      content: "";
-      position: absolute;
-      position-anchor: --li-hover;
-      inset: calc(anchor(start)) calc(anchor(end) + var(--padding))
-        calc(anchor(end)) calc(anchor(start) + var(--padding));
-      @apply bg-grey-300;
-      transition: 0.2s 0.2s;
-      pointer-events: none;
-      border-radius: 8px;
+    @media (hover: hover) and (pointer: fine) {
+      &::before {
+        content: "";
+        position-anchor: --li-hover;
+        inset: calc(anchor(start)) calc(anchor(end) + var(--padding))
+          calc(anchor(end)) calc(anchor(start) + var(--padding));
+        @apply absolute bg-grey-300 pointer-events-none rounded-lg;
+        @apply transition ease-in-out duration-200 delay-200;
+      }
     }
+
     &::after {
       content: "";
-      position: absolute;
       position-anchor: --li-active;
       inset: calc(anchor(start)) calc(anchor(end) + var(--padding))
         calc(anchor(end)) calc(anchor(start) + var(--padding));
-      @apply bg-brand;
-      transition: 0.2s 0.2s;
-      pointer-events: none;
-      border-radius: 8px;
+      @apply absolute bg-brand pointer-events-none rounded-lg;
+      @apply transition ease-in-out duration-200 delay-200;
     }
     & li {
       padding-inline: var(--padding);
