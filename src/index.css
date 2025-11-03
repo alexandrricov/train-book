@@ -87,7 +87,7 @@ dialog::backdrop {
         inset: calc(anchor(start)) calc(anchor(end) + var(--padding))
           calc(anchor(end)) calc(anchor(start) + var(--padding));
         @apply absolute bg-grey-300 pointer-events-none rounded-lg;
-        @apply transition ease-in-out duration-200 delay-200;
+        transition: 0.2s 0.2s;
       }
     }
 
@@ -97,7 +97,7 @@ dialog::backdrop {
       inset: calc(anchor(start)) calc(anchor(end) + var(--padding))
         calc(anchor(end)) calc(anchor(start) + var(--padding));
       @apply absolute bg-brand pointer-events-none rounded-lg;
-      @apply transition ease-in-out duration-200 delay-200;
+      transition: 0.2s 0.2s;
     }
     & li {
       padding-inline: var(--padding);
