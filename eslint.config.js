@@ -13,7 +13,7 @@ export default defineConfig([
     extends: [
       js.configs.recommended,
       tseslint.configs.recommended,
-      reactHooks.configs["recommended-latest"],
+      reactHooks.configs.flat["recommended-latest"],
       reactRefresh.configs.vite,
     ],
     languageOptions: {
@@ -28,8 +28,10 @@ export default defineConfig([
     plugins: {
       react,
     },
+    settings: {
+      react: { version: "detect" },
+    },
     rules: {
-      ...reactHooks.configs.recommended.rules,
       "react/no-unknown-property": "error",
       "react-refresh/only-export-components": [
         "warn",

@@ -1,14 +1,12 @@
 import { Button } from "./action";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { registerSW } from "virtual:pwa-register";
 
 function usePWAUpdate() {
   const [needRefresh, setNeedRefresh] = useState(false);
   const [offlineReady, setOfflineReady] = useState(false);
 
-  const [doUpdate, setDoUpdate] = useState<null | ((reload?: boolean) => void)>(
-    null
-  );
+  const doUpdateRef = useRef<((reload?: boolean) => void) | null>(null);
 
   useEffect(() => {
     const updateSW = registerSW({
@@ -20,7 +18,7 @@ function usePWAUpdate() {
         setOfflineReady(true);
       },
     });
-    setDoUpdate(() => updateSW);
+    doUpdateRef.current = updateSW;
 
     if ("serviceWorker" in navigator) {
       const onChange = () => {
@@ -39,11 +37,11 @@ function usePWAUpdate() {
   }, []);
 
   const applyUpdate = useCallback(() => {
-    if (doUpdate) {
-      doUpdate(true);
+    if (doUpdateRef.current) {
+      doUpdateRef.current(true);
       setTimeout(() => location.reload(), 300);
     }
-  }, [doUpdate]);
+  }, []);
 
   return { needRefresh, offlineReady, applyUpdate };
 }

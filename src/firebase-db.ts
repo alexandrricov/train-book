@@ -31,7 +31,7 @@ const exerciseType = z.enum(
 );
 
 const dateYMD = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
-const isoTimestamp = z.string().datetime({ offset: true }).optional();
+const isoTimestamp = z.iso.datetime({ offset: true }).optional();
 
 const itemDataSchema = z.object({
   date: dateYMD,
