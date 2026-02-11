@@ -24,6 +24,34 @@ import {
 } from "./types";
 import { toDateString } from "./utils/date";
 import { EXERCISE } from "./exercises";
+import { z } from "zod";
+
+const exerciseType = z.enum(
+  Object.keys(EXERCISE) as [string, ...string[]]
+);
+
+const dateYMD = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
+const isoTimestamp = z.string().datetime({ offset: true }).optional();
+
+const itemDataSchema = z.object({
+  date: dateYMD,
+  type: exerciseType,
+  count: z.number(),
+  createdAt: isoTimestamp,
+});
+
+const targetDataSchema = z.object({
+  date: dateYMD,
+  type: exerciseType,
+  value: z.number(),
+  createdAt: isoTimestamp,
+});
+
+const exportFileSchema = z.object({
+  schema: z.literal("trainbook.v1"),
+  items: z.array(z.object({ id: z.string().optional(), data: itemDataSchema })),
+  targets: z.array(z.object({ id: z.string().optional(), data: targetDataSchema })),
+});
 
 export async function createItemForCurrentUser(payload: SetRow) {
   const uid = auth.currentUser?.uid;
@@ -111,23 +139,23 @@ export async function exportMyItemsToJSON(filename = "trainbook-items.json") {
   const uid = auth.currentUser?.uid;
   if (!uid) throw new Error("Not authenticated");
 
-  const q = query(
-    collection(db, "users", uid, "items"),
-    orderBy("createdAt", "desc")
-  );
-  const snap = await getDocs(q);
-
-  const items = snap.docs.map((d) => {
+  const serialize = (d: import("firebase/firestore").QueryDocumentSnapshot) => {
     const raw = d.data();
     const serialized = deepMapValues(raw, tsToISO) as Record<string, unknown>;
     return { id: d.id, data: serialized };
-  });
+  };
+
+  const [itemsSnap, targetsSnap] = await Promise.all([
+    getDocs(query(collection(db, "users", uid, "items"), orderBy("createdAt", "desc"))),
+    getDocs(query(collection(db, "users", uid, "targets"), orderBy("createdAt", "desc"))),
+  ]);
 
   const payload = {
     schema: "trainbook.v1",
     uid,
     exportedAt: new Date().toISOString(),
-    items,
+    items: itemsSnap.docs.map(serialize),
+    targets: targetsSnap.docs.map(serialize),
   };
 
   const blob = new Blob([JSON.stringify(payload, null, 2)], {
@@ -159,24 +187,33 @@ export async function importMyItemsFromJSON(
   const text =
     typeof fileOrText === "string" ? fileOrText : await fileOrText.text();
 
-  // Parse JSON
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let parsed: any;
+  // Parse & validate JSON
+  let raw: unknown;
   try {
-    parsed = JSON.parse(text);
+    raw = JSON.parse(text);
   } catch {
     throw new Error("Invalid JSON file");
   }
-  if (!parsed || !Array.isArray(parsed.items)) {
-    throw new Error("Invalid payload: expected { items: [...] }");
-  }
 
-  const colRef = collection(db, "users", uid, "items");
+  const result = exportFileSchema.safeParse(raw);
+  if (!result.success) {
+    throw new Error(`Invalid export file: ${result.error.issues.map((i) => i.message).join(", ")}`);
+  }
+  const parsed = result.data;
+
+  const itemsCol = collection(db, "users", uid, "items");
+  const targetsCol = collection(db, "users", uid, "targets");
 
   // If replace mode: delete all current docs first
   if (mode === "replace") {
-    const snap = await getDocs(query(colRef));
-    const toDelete = snap.docs.map((d) => d.ref);
+    const [itemsSnap, targetsSnap] = await Promise.all([
+      getDocs(query(itemsCol)),
+      getDocs(query(targetsCol)),
+    ]);
+    const toDelete = [
+      ...itemsSnap.docs.map((d) => d.ref),
+      ...targetsSnap.docs.map((d) => d.ref),
+    ];
     for (let i = 0; i < toDelete.length; i += 400) {
       const batch = writeBatch(db);
       for (const ref of toDelete.slice(i, i + 400)) {
@@ -187,11 +224,9 @@ export async function importMyItemsFromJSON(
   }
 
   // Helper: convert createdAt only (string ISO -> Timestamp).
-  // DO NOT touch 'date' or any other fields.
   const normalizeDocument = (raw: Record<string, unknown>) => {
     const out: Record<string, unknown> = { ...raw };
 
-    // Only convert 'createdAt' if it is a string ISO date
     if (typeof out.createdAt === "string") {
       const d = new Date(out.createdAt as string);
       if (!isNaN(d.getTime())) {
@@ -199,30 +234,23 @@ export async function importMyItemsFromJSON(
       }
     }
 
-    // If reassignCreatedAt -> override with serverTimestamp()
     if (reassignCreatedAt) {
       out.createdAt = serverTimestamp();
     }
 
-    // Ensure 'date' stays STRING (if someone passed Date/Timestamp by mistake)
-    // If it's not a string, coerce to ISO date-only string for safety
     if (out.date && typeof out.date !== "string") {
       try {
-        // Attempt to coerce to YYYY-MM-DD if possible
         if (out.date instanceof Timestamp) {
           const d = (out.date as Timestamp).toDate();
           out.date = d.toISOString().slice(0, 10);
         } else if (out.date instanceof Date) {
           out.date = (out.date as Date).toISOString().slice(0, 10);
-        } else {
-          // Leave as-is if we cannot safely coerce
         }
       } catch {
         // Leave as-is on any error
       }
     }
 
-    // If createdAt is missing entirely, set serverTimestamp() to keep sort stable
     if (out.createdAt === undefined) {
       out.createdAt = serverTimestamp();
     }
@@ -242,17 +270,24 @@ export async function importMyItemsFromJSON(
     }
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  for (const row of parsed.items as Array<{ id?: string; data: any }>) {
+  // Import items
+  for (const row of parsed.items) {
     const id = preserveIds && row.id ? row.id : undefined;
-    const ref = id ? doc(colRef, id) : doc(colRef);
-
-    const normalized = normalizeDocument(row.data || {});
-    batch.set(ref, normalized, { merge: false });
-
+    const ref = id ? doc(itemsCol, id) : doc(itemsCol);
+    batch.set(ref, normalizeDocument({ ...row.data }), { merge: false });
     inBatch++;
     if (inBatch >= 400) await flush();
   }
+
+  // Import targets
+  for (const row of parsed.targets) {
+    const id = preserveIds && row.id ? row.id : undefined;
+    const ref = id ? doc(targetsCol, id) : doc(targetsCol);
+    batch.set(ref, normalizeDocument({ ...row.data }), { merge: false });
+    inBatch++;
+    if (inBatch >= 400) await flush();
+  }
+
   await flush();
 }
 

@@ -47,10 +47,10 @@ export function Settings() {
         <h2 className="text-h2 mb-4">Import/Export data</h2>
         <div className="flex items-center gap-4">
           <Button variation="primary" onClick={() => exportMyItemsToJSON()}>
-            Export Items
+            Export Data
           </Button>
           <label className="cursor-pointer bg-canvas text-gray-700 px-4 py-2 rounded-xl hover:bg-grey-100 dark:hover:bg-grey-600">
-            Import Items
+            Import Data
             <input
               type="file"
               name="import"
