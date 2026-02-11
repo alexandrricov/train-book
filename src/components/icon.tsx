@@ -70,21 +70,23 @@ export const ProgressIcon = ({
         stroke="#e6e6e6"
         strokeWidth={strokeWidth}
       />
-      <circle
-        style={{
-          strokeDasharray: 100,
-          strokeDashoffset: 100 - progress * 100,
-        }}
-        transform={`rotate(-90 ${CENTER} ${CENTER})`}
-        cx={CENTER}
-        cy={CENTER}
-        r={R}
-        fill="none"
-        stroke="currentColor"
-        strokeWidth={strokeWidth}
-        pathLength="100"
-        strokeLinecap="round"
-      />
+      {progress > 0 && (
+        <circle
+          style={{
+            strokeDasharray: 100,
+            strokeDashoffset: 100 - progress * 100,
+          }}
+          transform={`rotate(-90 ${CENTER} ${CENTER})`}
+          cx={CENTER}
+          cy={CENTER}
+          r={R}
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={strokeWidth}
+          pathLength="100"
+          strokeLinecap="round"
+        />
+      )}
       <g
         transform={`translate(${CENTER} ${CENTER}) scale(${
           iconSize / 45

@@ -71,29 +71,34 @@ export function TodayProgress() {
             const target = targets[type as ExerciseType]?.value;
 
             return (
-              <li key={type} className="not-last:mb-2 flex items-center gap-2">
-                <span className="font-medium">
-                  {EXERCISE[type as ExerciseType].label}:
-                </span>
-                {exercises
-                  .sort(
-                    (a, b) =>
-                      a.createdAt?.toDate().getTime() -
-                      b.createdAt?.toDate().getTime()
-                  )
-                  .map((c) => c.count)
-                  .join(", ")}{" "}
-                ({total}
-                {target ? ` / ${target}` : ""})
-                {target && (
+              <li key={type} className="not-last:mb-4">
+                <div className="flex items-center gap-2">
+                  <span className="font-medium">{exercise.label}</span>
+                  <span className="ml-auto tabular-nums text-sm">
+                    {total}
+                    {target ? ` / ${target}` : ""}
+                  </span>
                   <ProgressIcon
                     name={type as IconName}
-                    progress={total / target}
+                    progress={target ? total / target : 0}
                     style={{ color: exercise.color }}
-                    className="ml-auto"
                     size={32}
                   />
+                </div>
+                {target && (
+                  <div className="mt-1.5 h-1.5 rounded-full overflow-hidden bg-border/30">
+                    <div
+                      className="h-full rounded-full"
+                      style={{
+                        width: `${Math.min(100, (total / target) * 100)}%`,
+                        backgroundColor: exercise.color,
+                      }}
+                    />
+                  </div>
                 )}
+                <p className="mt-1 text-sm opacity-50">
+                  {exercises.map((c) => c.count).join(" · ")}
+                </p>
               </li>
             );
           })}
