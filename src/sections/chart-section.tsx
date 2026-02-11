@@ -94,6 +94,9 @@ export function ChartSection() {
   const chartRef = useRef<LineChart | null>(null);
   const [tooltip, setTooltip] = useState<TooltipState | null>(null);
   const tooltipContainerRef = useRef<HTMLDivElement>(null);
+  const chartPointsRef = useRef<
+    { dateIndex: number; x: number; y: number; date: string }[]
+  >([]);
 
   useEffect(() => {
     let days;
@@ -323,57 +326,100 @@ export function ChartSection() {
       }
     });
 
-    // Tooltip on point hover
+    // Collect point positions for proximity-based tooltip
+    chartPointsRef.current = [];
     chart.on("draw", (event) => {
       if ((event as PointDrawEvent).type === "point") {
         const pointEvent = event as PointDrawEvent;
-        const node = pointEvent.element.getNode<SVGElement>();
-
-        node.style.cursor = "pointer";
-
-        node.addEventListener("mouseenter", () => {
-          const rect = node.getBoundingClientRect();
-          const containerRect =
-            tooltipContainerRef.current?.getBoundingClientRect();
-          if (!containerRect) return;
-
-          setTooltip({
-            visible: true,
-            x: rect.left + rect.width / 2 - containerRect.left,
-            y: rect.top - containerRect.top,
-            date: String(chartData.labels?.[pointEvent.index] ?? ""),
-            seriesIndex: pointEvent.seriesIndex,
-            value: typeof pointEvent.value === "number" ? pointEvent.value : 0,
-          });
+        chartPointsRef.current.push({
+          dateIndex: pointEvent.index,
+          x: pointEvent.x,
+          y: pointEvent.y,
+          date: String(chartData.labels?.[pointEvent.index] ?? ""),
         });
-
-        node.addEventListener("touchstart", () => {
-          const rect = node.getBoundingClientRect();
-          const containerRect =
-            tooltipContainerRef.current?.getBoundingClientRect();
-          if (!containerRect) return;
-
-          setTooltip({
-            visible: true,
-            x: rect.left + rect.width / 2 - containerRect.left,
-            y: rect.top - containerRect.top,
-            date: String(chartData.labels?.[pointEvent.index] ?? ""),
-            seriesIndex: pointEvent.seriesIndex,
-            value: typeof pointEvent.value === "number" ? pointEvent.value : 0,
-          });
-        }, { passive: true });
       }
     });
 
-    // Hide tooltip when mouse leaves the chart area
+    // Proximity tooltip: snap to nearest date column by X
     const container = chartContainerRef.current;
-    const handleContainerLeave = () => setTooltip(null);
-    container.addEventListener("mouseleave", handleContainerLeave);
-    container.addEventListener("touchend", handleContainerLeave);
+
+    const showNearestTooltip = (clientX: number) => {
+      const svg = container.querySelector("svg");
+      const containerRect =
+        tooltipContainerRef.current?.getBoundingClientRect();
+      if (!svg || !containerRect) return;
+
+      const svgRect = svg.getBoundingClientRect();
+      const svgX = clientX - svgRect.left;
+
+      // Group points by date, track x and topmost y per column
+      const columns = new Map<
+        number,
+        { x: number; minY: number; date: string }
+      >();
+      for (const p of chartPointsRef.current) {
+        const col = columns.get(p.dateIndex);
+        if (!col) {
+          columns.set(p.dateIndex, {
+            x: p.x,
+            minY: p.y,
+            date: p.date,
+          });
+        } else if (p.y < col.minY) {
+          col.minY = p.y;
+        }
+      }
+
+      // Find nearest column
+      let nearest: { x: number; minY: number; date: string } | null = null;
+      let minDist = Infinity;
+      for (const col of columns.values()) {
+        const dist = Math.abs(col.x - svgX);
+        if (dist < minDist) {
+          minDist = dist;
+          nearest = col;
+        }
+      }
+      if (!nearest) return;
+
+      const offsetX = svgRect.left - containerRect.left;
+      const offsetY = svgRect.top - containerRect.top;
+
+      setTooltip({
+        visible: true,
+        x: nearest.x + offsetX,
+        y: nearest.minY + offsetY,
+        date: nearest.date,
+        seriesIndex: 0,
+        value: 0,
+      });
+    };
+
+    const handleMouseMove = (e: MouseEvent) => showNearestTooltip(e.clientX);
+    const handleTouchStart = (e: TouchEvent) => {
+      if (e.touches.length > 0) showNearestTooltip(e.touches[0].clientX);
+    };
+    const handleTouchMove = (e: TouchEvent) => {
+      if (e.touches.length > 0) showNearestTooltip(e.touches[0].clientX);
+    };
+    const handleLeave = () => setTooltip(null);
+
+    container.addEventListener("mousemove", handleMouseMove);
+    container.addEventListener("touchstart", handleTouchStart, {
+      passive: true,
+    });
+    container.addEventListener("touchmove", handleTouchMove, {
+      passive: true,
+    });
+    container.addEventListener("mouseleave", handleLeave);
+    container.addEventListener("touchend", handleLeave);
 
     return () => {
-      container.removeEventListener("mouseleave", handleContainerLeave);
-      container.removeEventListener("touchend", handleContainerLeave);
+      container.removeEventListener("mousemove", handleMouseMove);
+      container.removeEventListener("touchstart", handleTouchStart);
+      container.removeEventListener("touchmove", handleTouchMove);
+      container.removeEventListener("mouseleave", handleLeave);
+      container.removeEventListener("touchend", handleLeave);
       chart.detach();
       chartRef.current = null;
     };
