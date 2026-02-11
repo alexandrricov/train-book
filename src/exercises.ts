@@ -1,19 +1,19 @@
 export const EXERCISE = {
   pushup: {
     label: "Push-ups",
-    color: "#FF6B6B",
+    color: "#E5484D",
   },
   pullup: {
     label: "Pull-ups",
-    color: "#4ECDC4",
+    color: "#00A2C7",
   },
   squat: {
     label: "Squats",
-    color: "#FFD93D",
+    color: "#46A758",
   },
   abs: {
     label: "Abs",
-    color: "#1A535C",
+    color: "#8E4EC6",
   },
 };
 
