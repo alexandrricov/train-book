@@ -1,19 +1,14 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { SetRow, ExerciseType, TargetsAsOf } from "../types";
 import { subscribeItems, subscribeTargets } from "../firebase-db";
-import {
-  CartesianGrid,
-  Legend,
-  Line,
-  LineChart,
-  ReferenceLine,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-  type LegendPayload,
-  type TooltipContentProps,
-} from "recharts";
+import { LineChart, Svg, Interpolation } from "chartist";
+import type {
+  LineChartData,
+  LineChartOptions,
+  LineChartCreatedEvent,
+  PointDrawEvent,
+} from "chartist";
+import "chartist/dist/index.css";
 import { EXERCISE, EXERCISE_ORDER } from "../exercises";
 import { Icon } from "../components/icon";
 import { Select } from "../components/select";
@@ -78,12 +73,27 @@ export type DailyTotals = {
   date: string; // "YYYY-MM-DD"
 } & Partial<Record<ExerciseType, number>>;
 
+const SERIES_LETTERS = "abcdefghijklmno";
+
+interface TooltipState {
+  visible: boolean;
+  x: number;
+  y: number;
+  date: string;
+  seriesIndex: number;
+  value: number;
+}
+
 export function ChartSection() {
   const [periodFilter, setPeriodFilter] = useState<PeriodTabsKey>(
     PeriodTabsKey.month
   );
   const [items, setItems] = useState<SetRow[]>([]);
   const [targets, setTargets] = useState<TargetsAsOf>({});
+  const chartContainerRef = useRef<HTMLDivElement>(null);
+  const chartRef = useRef<LineChart | null>(null);
+  const [tooltip, setTooltip] = useState<TooltipState | null>(null);
+  const tooltipContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     let days;
@@ -108,12 +118,7 @@ export function ChartSection() {
       default:
         days = undefined;
     }
-    const unsubItems = subscribeItems(
-      setItems,
-      days
-      //
-      // new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10)
-    );
+    const unsubItems = subscribeItems(setItems, days);
 
     return () => {
       unsubItems();
@@ -135,7 +140,9 @@ export function ChartSection() {
       a < b ? -1 : a > b ? 1 : 0
     );
 
-    const _types = [...new Set(items.map((item) => item.type))].sort((a, b) => {
+    const _types = [
+      ...new Set(items.map((item) => item.type)),
+    ].sort((a, b) => {
       const orderA = EXERCISE_ORDER.indexOf(a as ExerciseType);
       const orderB = EXERCISE_ORDER.indexOf(b as ExerciseType);
       return orderA < orderB ? -1 : orderA > orderB ? 1 : 0;
@@ -190,8 +197,201 @@ export function ChartSection() {
 
   const groupedItems = groupItemsByDateAndType(items as SetRow[]);
 
+  // Build Chartist data
+  const chartData: LineChartData = useMemo(
+    () => ({
+      labels: groupedItems.map((row) => row.date),
+      series: types.map((type) => ({
+        name: type,
+        data: groupedItems.map((row) => row[type] ?? null),
+      })),
+    }),
+    [groupedItems, types]
+  );
+
+  // Compute Y-axis high
+  const yHigh = useMemo(() => {
+    let max = 0;
+    for (const row of groupedItems) {
+      for (const type of types) {
+        const v = row[type];
+        if (v != null && v > max) max = v;
+      }
+    }
+    for (const [, data] of Object.entries(targets)) {
+      if (data.value > max) max = data.value;
+    }
+    return max + 10;
+  }, [groupedItems, types, targets]);
+
+  const chartOptions: LineChartOptions = useMemo(
+    () => ({
+      fullWidth: true,
+      height: 300,
+      low: 0,
+      high: yHigh,
+      chartPadding: { top: 10, right: 16, bottom: 0, left: 0 },
+      showPoint: true,
+      showLine: true,
+      showArea: false,
+      lineSmooth: Interpolation.simple({ fillHoles: true }),
+      axisX: {
+        labelInterpolationFnc: (value: string | number | Date, index: number) => {
+          const label = String(value);
+          // Show fewer labels when there are many data points
+          const total = groupedItems.length;
+          if (total > 14) {
+            return index % Math.ceil(total / 7) === 0
+              ? formatTick(label, periodFilter)
+              : null;
+          }
+          return formatTick(label, periodFilter);
+        },
+      },
+      axisY: {
+        onlyInteger: true,
+        offset: 30,
+      },
+    }),
+    [yHigh, periodFilter, groupedItems.length]
+  );
+
+  // Dynamic CSS for series colors
+  const seriesStyles = useMemo(() => {
+    return types
+      .map((type, i) => {
+        const letter = SERIES_LETTERS[i];
+        const color = EXERCISE[type].color;
+        return `.ct-series-${letter} .ct-line, .ct-series-${letter} .ct-point { stroke: ${color} !important; }`;
+      })
+      .join("\n");
+  }, [types]);
+
+  // Collect all data for a given date index (for tooltip)
+  const getTooltipData = useCallback(
+    (dateIndex: number) => {
+      const row = groupedItems[dateIndex];
+      if (!row) return null;
+      return {
+        date: row.date,
+        entries: types
+          .map((type) => ({
+            type: type as ExerciseType,
+            value: row[type] ?? null,
+          }))
+          .filter((e) => e.value != null),
+      };
+    },
+    [groupedItems, types]
+  );
+
+  // Create/update chart
+  useEffect(() => {
+    if (!chartContainerRef.current) return;
+
+    if (chartRef.current) {
+      chartRef.current.detach();
+    }
+
+    const chart = new LineChart(
+      chartContainerRef.current,
+      chartData,
+      chartOptions
+    );
+    chartRef.current = chart;
+
+    // Draw reference lines for targets
+    chart.on("created", (event: LineChartCreatedEvent) => {
+      const { svg, chartRect, axisY } = event;
+
+      for (const [type, data] of Object.entries(targets)) {
+        const y = chartRect.y1 - axisY.projectValue(data.value);
+        const color = EXERCISE[type as ExerciseType].color;
+
+        new Svg(
+          "line",
+          {
+            x1: chartRect.x1,
+            y1: y,
+            x2: chartRect.x2,
+            y2: y,
+            style: `stroke: ${color}; stroke-dasharray: 6 6; stroke-width: 1px; opacity: 0.7;`,
+          },
+          "ct-target-line",
+          svg
+        );
+      }
+    });
+
+    // Tooltip on point hover
+    chart.on("draw", (event) => {
+      if ((event as PointDrawEvent).type === "point") {
+        const pointEvent = event as PointDrawEvent;
+        const node = pointEvent.element.getNode<SVGElement>();
+
+        node.style.cursor = "pointer";
+
+        node.addEventListener("mouseenter", () => {
+          const rect = node.getBoundingClientRect();
+          const containerRect =
+            tooltipContainerRef.current?.getBoundingClientRect();
+          if (!containerRect) return;
+
+          setTooltip({
+            visible: true,
+            x: rect.left + rect.width / 2 - containerRect.left,
+            y: rect.top - containerRect.top,
+            date: String(chartData.labels?.[pointEvent.index] ?? ""),
+            seriesIndex: pointEvent.seriesIndex,
+            value: typeof pointEvent.value === "number" ? pointEvent.value : 0,
+          });
+        });
+
+        node.addEventListener("touchstart", () => {
+          const rect = node.getBoundingClientRect();
+          const containerRect =
+            tooltipContainerRef.current?.getBoundingClientRect();
+          if (!containerRect) return;
+
+          setTooltip({
+            visible: true,
+            x: rect.left + rect.width / 2 - containerRect.left,
+            y: rect.top - containerRect.top,
+            date: String(chartData.labels?.[pointEvent.index] ?? ""),
+            seriesIndex: pointEvent.seriesIndex,
+            value: typeof pointEvent.value === "number" ? pointEvent.value : 0,
+          });
+        }, { passive: true });
+      }
+    });
+
+    // Hide tooltip when mouse leaves the chart area
+    const container = chartContainerRef.current;
+    const handleContainerLeave = () => setTooltip(null);
+    container.addEventListener("mouseleave", handleContainerLeave);
+    container.addEventListener("touchend", handleContainerLeave);
+
+    return () => {
+      container.removeEventListener("mouseleave", handleContainerLeave);
+      container.removeEventListener("touchend", handleContainerLeave);
+      chart.detach();
+      chartRef.current = null;
+    };
+  }, [chartData, chartOptions, targets, getTooltipData]);
+
+  const tooltipData = tooltip ? getTooltipData(
+    groupedItems.findIndex((r) => r.date === tooltip.date)
+  ) : null;
+
   return (
     <section>
+      <style>{`
+        ${seriesStyles}
+        .ct-grid { stroke: var(--color-border) !important; stroke-dasharray: 3 3; }
+        .ct-label { color: currentColor !important; fill: currentColor !important; }
+        .ct-point { stroke-width: 8px !important; }
+        .ct-line { stroke-width: 2px !important; }
+      `}</style>
       <header className="flex items-center justify-between mb-4">
         <h2 className="text-h2">History Chart</h2>
         <Select
@@ -205,159 +405,66 @@ export function ChartSection() {
           }))}
         />
       </header>
-      <div className="h-[300px] w-full">
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart
-            width={500}
-            height={300}
-            data={groupedItems}
-            margin={{
-              top: 5,
-              right: 30,
-              left: 20,
-              bottom: 5,
+      <div ref={tooltipContainerRef} className="relative">
+        <div ref={chartContainerRef} className="h-[300px] w-full" />
+        {tooltip && tooltipData && (
+          <article
+            className="absolute z-10 p-4 bg-canvas border border-border rounded shadow pointer-events-none"
+            style={{
+              left: tooltip.x,
+              top: tooltip.y,
+              transform: "translate(-50%, -100%) translateY(-12px)",
             }}
           >
-            <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" />
-            <XAxis
-              dataKey="date"
-              tickFormatter={(item) => formatTick(item, periodFilter)}
-              tick={{ fill: "currentColor" }}
-              tickLine={{
-                stroke: "var(--color-border)",
-              }}
-              axisLine={{ stroke: "var(--color-border)" }}
-            />
-            <YAxis
-              width={20}
-              domain={[
-                (dataMin) => Math.max(0 - Math.abs(dataMin), 0),
-                (dataMax) => dataMax + 10,
-              ]}
-              tick={{ fill: "currentColor" }}
-              tickLine={{
-                stroke: "var(--color-border)",
-              }}
-              axisLine={{ stroke: "var(--color-border)" }}
-            />
-            {types.map((type) => (
-              <Line
-                key={type}
-                type="monotone"
-                dataKey={type}
-                stroke={EXERCISE[type].color}
-                dot={{ fill: "var(--color-canvas)" }}
-                activeDot={{ stroke: "var(--color-canvas)" }}
-                connectNulls
-              />
-            ))}
-            {Object.entries(targets).map(([type, data]) => (
-              <ReferenceLine
-                key={type}
-                y={data.value}
-                // xAxisId="left"
-                // label={`${EXERCISE[type as ExerciseType].label} target (${
-                //   data.value
-                // })`}
-                strokeDasharray="6 6"
-                stroke={EXERCISE[type as ExerciseType].color}
-              />
-            ))}
-            <Tooltip
-              cursor={{ stroke: "var(--color-border)", strokeWidth: 2 }}
-              active
-              content={({
-                active,
-                payload,
-                label,
-              }: TooltipContentProps<number, string>) => {
-                if (active && payload && payload.length && label) {
-                  return (
-                    <article className="p-4 bg-canvas border border-border rounded shadow">
-                      <h3 className="mb-2">
-                        {new Intl.DateTimeFormat(undefined, {
-                          dateStyle: "medium",
-                        }).format(new Date(label))}
-                      </h3>
-                      <dl className="">
-                        {payload
-                          ?.sort((a, b) => {
-                            const orderA = EXERCISE_ORDER.indexOf(
-                              a.value as ExerciseType
-                            );
-                            const orderB = EXERCISE_ORDER.indexOf(
-                              b.value as ExerciseType
-                            );
-                            return orderA - orderB;
-                          })
-                          .map((entry, index) => (
-                            <div
-                              key={`item-${index}`}
-                              style={{
-                                color: entry.color,
-                              }}
-                              className="flex gap-2 items-center justify-between"
-                            >
-                              <dt className="flex gap-2 items-center">
-                                <Icon
-                                  name={entry.dataKey as ExerciseType}
-                                  className="size-5"
-                                  style={{
-                                    color: entry.color,
-                                  }}
-                                />
-                                {EXERCISE[entry.dataKey as ExerciseType].label}
-                              </dt>
-                              <dd>{entry.value}</dd>
-                            </div>
-                          ))}
-                      </dl>
-                    </article>
-                  );
-                }
-                return null;
-              }}
-            />
-            <Legend
-              content={({ payload }) => {
-                return (
-                  <ul className="flex flex-wrap gap-2 items-center justify-center">
-                    {(payload as LegendPayload[])
-                      ?.sort((a: LegendPayload, b: LegendPayload) => {
-                        const orderA = EXERCISE_ORDER.indexOf(
-                          a.value as ExerciseType
-                        );
-                        const orderB = EXERCISE_ORDER.indexOf(
-                          b.value as ExerciseType
-                        );
-                        return orderA - orderB;
-                      })
-                      .map((entry: LegendPayload, index: number) => (
-                        <li
-                          key={`item-${index}`}
-                          style={{
-                            color: EXERCISE[entry.value as ExerciseType].color,
-                          }}
-                          className="flex gap-2 items-center"
-                        >
-                          <Icon
-                            name={entry.value as ExerciseType}
-                            className="size-5"
-                            style={{
-                              color:
-                                EXERCISE[entry.value as ExerciseType].color,
-                            }}
-                          />
-                          {EXERCISE[entry.value as ExerciseType].label}
-                        </li>
-                      ))}
-                  </ul>
-                );
-              }}
-            />
-          </LineChart>
-        </ResponsiveContainer>
+            <h3 className="mb-2">
+              {new Intl.DateTimeFormat(undefined, {
+                dateStyle: "medium",
+              }).format(new Date(tooltipData.date))}
+            </h3>
+            <dl>
+              {tooltipData.entries.map((entry) => (
+                <div
+                  key={entry.type}
+                  style={{ color: EXERCISE[entry.type].color }}
+                  className="flex gap-2 items-center justify-between"
+                >
+                  <dt className="flex gap-2 items-center">
+                    <Icon
+                      name={entry.type}
+                      className="size-5"
+                      style={{ color: EXERCISE[entry.type].color }}
+                    />
+                    {EXERCISE[entry.type].label}
+                  </dt>
+                  <dd>{entry.value}</dd>
+                </div>
+              ))}
+            </dl>
+          </article>
+        )}
       </div>
+      <ul className="flex flex-wrap gap-2 items-center justify-center mt-2">
+        {types
+          .sort((a, b) => {
+            const orderA = EXERCISE_ORDER.indexOf(a as ExerciseType);
+            const orderB = EXERCISE_ORDER.indexOf(b as ExerciseType);
+            return orderA - orderB;
+          })
+          .map((type) => (
+            <li
+              key={type}
+              style={{ color: EXERCISE[type].color }}
+              className="flex gap-2 items-center"
+            >
+              <Icon
+                name={type}
+                className="size-5"
+                style={{ color: EXERCISE[type].color }}
+              />
+              {EXERCISE[type].label}
+            </li>
+          ))}
+      </ul>
     </section>
   );
 }
