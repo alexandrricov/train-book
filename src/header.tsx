@@ -80,7 +80,7 @@ export function Header() {
             <li>
               <NavLink
                 to="/"
-                className={({ isActive }) => (isActive ? "text-grey-0" : "")}
+                className={({ isActive }) => (isActive ? "text-on-accent" : "")}
               >
                 {({ isActive }) => (
                   <>
@@ -92,7 +92,7 @@ export function Header() {
             <li>
               <NavLink
                 to="/history"
-                className={({ isActive }) => (isActive ? "text-grey-0" : "")}
+                className={({ isActive }) => (isActive ? "text-on-accent" : "")}
               >
                 {({ isActive }) => (
                   <>
@@ -105,7 +105,7 @@ export function Header() {
             <li>
               <NavLink
                 to="/settings"
-                className={({ isActive }) => (isActive ? "text-grey-0" : "")}
+                className={({ isActive }) => (isActive ? "text-on-accent" : "")}
               >
                 {({ isActive }) => (
                   <>

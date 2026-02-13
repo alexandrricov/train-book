@@ -3,26 +3,14 @@
 @theme {
   --color-*: initial;
 
-  --color-grey-0: #fff;
-  --color-grey-50: color-mix(in oklab, var(--color-grey-500), white 95%);
-  --color-grey-100: color-mix(in oklab, var(--color-grey-500), white 90%);
-  --color-grey-200: color-mix(in oklab, var(--color-grey-500), white 80%);
-  --color-grey-300: color-mix(in oklab, var(--color-grey-500), white 70%);
-  --color-grey-400: color-mix(in oklab, var(--color-grey-500), white 60%);
-  --color-grey-500: oklch(82% 0.05 250);
-  --color-grey-600: color-mix(in oklab, var(--color-grey-500), black 10%);
-  --color-grey-700: color-mix(in oklab, var(--color-grey-500), black 20%);
-  --color-grey-800: color-mix(in oklab, var(--color-grey-500), black 30%);
-  --color-grey-900: color-mix(in oklab, var(--color-grey-500), black 40%);
-  --color-grey-950: color-mix(in oklab, var(--color-grey-500), black 50%);
-  --color-grey-1000: #000;
+  --color-canvas: light-dark(var(--grey-50), var(--grey-900));
+  --color-canvas2: light-dark(var(--grey-100), var(--grey-800));
+  --color-canvas-text: light-dark(var(--grey-900), var(--grey-50));
+  --color-border: light-dark(var(--grey-300), var(--grey-600));
+  --color-muted: light-dark(var(--grey-600), var(--grey-300));
+  --color-on-accent: #fff;
+  --color-surface-inverse: #000;
 
-  --color-canvas: light-dark(var(--color-grey-50), var(--color-grey-900));
-  --color-canvas2: light-dark(var(--color-grey-100), var(--color-grey-800));
-  --color-canvas-text: light-dark(var(--color-grey-900), var(--color-grey-50));
-  --color-border: light-dark(var(--color-grey-300), var(--color-grey-600));
-
-  /* --color-brand: light-dark(var(--color-primary-500), var(--color-primary-400)); */
   --color-brand: #3881ff;
   --color-brand-light: color-mix(in oklab, var(--color-brand), white 10%);
   --color-brand-dark: color-mix(in oklab, var(--color-brand), black 10%);
@@ -43,6 +31,14 @@
 }
 
 :root {
+  --grey-base: oklch(82% 0.05 250);
+  --grey-50: color-mix(in oklab, var(--grey-base), white 95%);
+  --grey-100: color-mix(in oklab, var(--grey-base), white 90%);
+  --grey-300: color-mix(in oklab, var(--grey-base), white 70%);
+  --grey-600: color-mix(in oklab, var(--grey-base), black 10%);
+  --grey-800: color-mix(in oklab, var(--grey-base), black 30%);
+  --grey-900: color-mix(in oklab, var(--grey-base), black 40%);
+
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
 
   color-scheme: light dark;
@@ -86,7 +82,7 @@ dialog::backdrop {
         position-anchor: --li-hover;
         inset: calc(anchor(start)) calc(anchor(end) + var(--padding))
           calc(anchor(end)) calc(anchor(start) + var(--padding));
-        @apply absolute bg-grey-300 pointer-events-none rounded-lg;
+        @apply absolute bg-border pointer-events-none rounded-lg;
         transition: 0.15s;
       }
     }

@@ -59,7 +59,7 @@ export function Dropdown({
       style={floatingStyles}
       {...getFloatingProps()}
       className={clsx(
-        "shadow-[inset_0_0_0_1px_theme(colors.grey.200),0_16px_32px_-12px_#61616B1A] dark:shadow-[inset_0_0_0_1px_theme(colors.grey.800),0_16px_32px_-12px_#03040752] bg-canvas z-10 rounded-xl p-2",
+        "shadow-[inset_0_0_0_1px_theme(colors.border),0_16px_32px_-12px_#61616B1A] dark:shadow-[inset_0_0_0_1px_theme(colors.border),0_16px_32px_-12px_#03040752] bg-canvas z-10 rounded-xl p-2",
         className,
       )}
     >

@@ -17,7 +17,7 @@ export function Select({
       )}
     >
       {children && (
-        <span className="absolute left-1 transform -translate-y-1/2 text-gray-500 bg-canvas p-0.5 pointer-events-none whitespace-nowrap text-xs">
+        <span className="absolute left-1 transform -translate-y-1/2 text-muted bg-canvas p-0.5 pointer-events-none whitespace-nowrap text-xs">
           {children}
         </span>
       )}

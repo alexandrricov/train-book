@@ -55,7 +55,7 @@ export function PWAUpdateBanner() {
     <div
       role="alert"
       aria-live="polite"
-      className="fixed inset-x-4 bottom-4 px-4 py-3 rounded-xl bg-grey-1000 text-grey-0 flex gap-2 items-center justify-between"
+      className="fixed inset-x-4 bottom-4 px-4 py-3 rounded-xl bg-surface-inverse text-on-accent flex gap-2 items-center justify-between"
     >
       New version available.
       <Button

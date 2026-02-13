@@ -62,7 +62,7 @@ export function TodayProgress() {
     <section className="p-4 rounded-2xl border border-border mb-6">
       <h2 className="text-h2 mb-3">Today's Progress</h2>
       {groupedItems.length === 0 ? (
-        <p className="text-gray-500">No exercises logged today.</p>
+        <p className="text-muted">No exercises logged today.</p>
       ) : (
         <ul>
           {groupedItems.map(([type, exercises]) => {

@@ -49,7 +49,7 @@ export function Settings() {
           <Button variation="primary" onClick={() => exportMyItemsToJSON()}>
             Export Data
           </Button>
-          <label className="cursor-pointer bg-canvas text-gray-700 px-4 py-2 rounded-xl hover:bg-grey-100 dark:hover:bg-grey-600">
+          <label className="cursor-pointer bg-canvas text-muted px-4 py-2 rounded-xl hover:bg-canvas-text/10">
             Import Data
             <input
               type="file"
