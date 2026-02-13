@@ -2,182 +2,156 @@ import { useEffect, useMemo, useState } from "react";
 import { type ExerciseType, type SetRow } from "../types";
 import { deleteMyItem, subscribeItems } from "../firebase-db";
 import { EXERCISE, EXERCISE_ORDER } from "../exercises";
-import { AddSection } from "../sections/add-section";
 import { Icon } from "../components/icon";
 import { Button } from "../components/action";
+import { toDateString } from "../utils/date";
+
+function relativeDay(dateStr: string): string | null {
+  const today = toDateString();
+  if (dateStr === today) return "Today";
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  if (dateStr === toDateString(yesterday)) return "Yesterday";
+  return null;
+}
+
+function formatDate(dateStr: string): string {
+  const [y, m, d] = dateStr.split("-").map(Number);
+  return new Intl.DateTimeFormat(undefined, { dateStyle: "medium" }).format(
+    new Date(y, m - 1, d)
+  );
+}
 
 export function History() {
   const [items, setItems] = useState<SetRow[]>([]);
+  const [editing, setEditing] = useState(false);
 
   useEffect(() => {
     const unsubscribe = subscribeItems(setItems);
-
-    return () => {
-      unsubscribe();
-    };
+    return () => unsubscribe();
   }, []);
 
   const groupedItems = useMemo(() => {
-    return items.reduce((acc, item) => {
-      if (!acc[item.date])
-        acc[item.date] = {} as Record<ExerciseType, SetRow[]>;
-      if (!acc[item.date][item.type]) acc[item.date][item.type] = [];
-      acc[item.date][item.type].push(item);
-      return acc;
-    }, {} as Record<string, Record<ExerciseType, SetRow[]>>);
+    return items.reduce(
+      (acc, item) => {
+        if (!acc[item.date])
+          acc[item.date] = {} as Record<ExerciseType, SetRow[]>;
+        if (!acc[item.date][item.type]) acc[item.date][item.type] = [];
+        acc[item.date][item.type].push(item);
+        return acc;
+      },
+      {} as Record<string, Record<ExerciseType, SetRow[]>>
+    );
   }, [items]);
 
-  const itemsGroupedByDate = useMemo(() => {
-    return Object.groupBy(items, (i) => i.date) as Record<string, SetRow[]>;
-  }, [items]);
-
-  // every day from today to smallest date
   const days = useMemo(() => {
-    // if (items.length === 0) return [];
-    // const dateStrings = Object.keys(groupedItems);
-    // const minDate = dateStrings.reduce(
-    //   (min, d) => (d < min ? d : min),
-    //   dateStrings[0]
-    // );
-    // const today = new Date();
-    // const min = new Date(minDate);
-    // const result: string[] = [];
-    // for (let d = new Date(today); d >= min; d.setDate(d.getDate() - 1)) {
-    //   const iso = d.toISOString().slice(0, 10);
-    //   result.push(iso);
-    // }
-    // return result;
-
     return Object.keys(groupedItems).sort((a, b) => (a > b ? -1 : 1));
   }, [groupedItems]);
 
-  // console.log({ items, groupedItems, days, itemsGroupedByDate });
-
-  if (items.length === 0) return <div>No items yet</div>;
+  if (items.length === 0) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-muted">No exercises logged yet.</p>
+      </div>
+    );
+  }
 
   return (
     <>
-      <h1 className="text-h1 mb-4">History</h1>
+      <div className="flex items-center justify-between mb-4">
+        <h1 className="text-h1">History</h1>
+        <Button
+          variation="secondary"
+          size="small"
+          onClick={() => setEditing((e) => !e)}
+        >
+          {editing ? "Done" : "Edit"}
+        </Button>
+      </div>
 
-      <AddSection />
+      <ul>
+        {days.map((d) => {
+          const relative = relativeDay(d);
+          const formatted = formatDate(d);
+          const exerciseTypes = Object.entries(groupedItems[d]).sort(
+            ([a], [b]) => {
+              return (
+                EXERCISE_ORDER.indexOf(a as ExerciseType) -
+                EXERCISE_ORDER.indexOf(b as ExerciseType)
+              );
+            }
+          );
 
-      <section>
-        <h2 className="text-h2 mb-4">History log</h2>
-        {days.length === 0 && <div>No items yet</div>}
-        <ul>
-          {days.map((d) => (
-            <li key={d} className="mb-6">
-              <details className="open:[&>summary>svg]:rotate-180">
-                <summary className="cursor-pointer mb-2 flex justify-between items-center">
-                  <div className="flex items-center gap-2">
-                    <h3 className="text-h3">
-                      {new Date(d).toLocaleDateString()}
-                    </h3>
-                    <div className="flex">
-                      {Object.entries(groupedItems[d])
-                        .sort(([a], [b]) => {
-                          const orderA = EXERCISE_ORDER.indexOf(
-                            a as ExerciseType
-                          );
-                          const orderB = EXERCISE_ORDER.indexOf(
-                            b as ExerciseType
-                          );
-                          return orderA - orderB;
-                        })
-                        .map(([type, counts]) => (
-                          <div
-                            key={type}
-                            className="flex items-center gap-1 ml-2"
-                          >
-                            <Icon
-                              name={type as ExerciseType}
-                              className="size-5"
-                              style={{
-                                color: EXERCISE[type as ExerciseType]?.color,
-                              }}
-                            />
-                            {counts.reduce((acc, b) => acc + b.count, 0)}
-                          </div>
-                        ))}
+          return (
+            <li
+              key={d}
+              className="p-4 rounded-2xl border border-border not-last:mb-4"
+            >
+              <div className="flex items-baseline justify-between mb-3">
+                <h2 className="text-h3">{relative ?? formatted}</h2>
+                {relative && (
+                  <span className="text-muted text-sm">{formatted}</span>
+                )}
+              </div>
+
+              {exerciseTypes.map(([type, sets]) => {
+                const exercise = EXERCISE[type as ExerciseType];
+                const total = sets.reduce((acc, s) => acc + s.count, 0);
+
+                return (
+                  <div key={type} className="not-last:mb-2">
+                    {/* Summary row */}
+                    <div className="flex items-center gap-2">
+                      <Icon
+                        name={type as ExerciseType}
+                        className="size-5 shrink-0"
+                        style={{ color: exercise.color }}
+                      />
+                      <span className="font-medium">{exercise.label}</span>
+
+                      {!editing && sets.length > 1 && (
+                        <span className="text-sm text-muted ml-auto tabular-nums">
+                          {sets.map((s) => s.count).join(" · ")}
+                        </span>
+                      )}
+
+                      <span className="font-bold tabular-nums min-w-8 text-right ml-auto">
+                        {total}
+                      </span>
                     </div>
-                  </div>
-                  <Icon name="chevron-down" />
-                </summary>
-                <div className="mt-2">
-                  <table className="w-full table-auto border-collapse">
-                    <thead>
-                      <tr className="text-left">
-                        <th className="pb-1">Exercise</th>
-                        <th className="pb-1">Count</th>
-                        <th className="pb-1 text-right">Action</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {itemsGroupedByDate[d].map((row) => (
-                        <tr key={row.id} className="border-t border-border">
-                          <td className="py-1">
-                            <div className="flex items-center gap-2">
-                              <Icon
-                                name={row.type as ExerciseType}
-                                className="size-5"
-                                style={{
-                                  color:
-                                    EXERCISE[row.type as ExerciseType]?.color,
-                                }}
-                              />
-                              {EXERCISE[row.type as ExerciseType]?.label ||
-                                row.type ||
-                                "Unknown"}
-                            </div>
-                          </td>
-                          <td className="py-1">{row.count}</td>
-                          <td className="py-1 font-semibold">
-                            <Button
-                              variation="secondary"
-                              size="small"
-                              className="ml-auto"
+
+                    {/* Edit mode: individual sets with delete */}
+                    {editing && (
+                      <ul className="mt-1 ml-7 space-y-1">
+                        {sets.map((set) => (
+                          <li
+                            key={set.id}
+                            className="flex items-center gap-2 text-sm"
+                          >
+                            <span className="tabular-nums">{set.count}</span>
+                            <button
+                              type="button"
+                              aria-label={`Delete ${exercise.label} set of ${set.count}`}
+                              className="text-muted hover:text-canvas-text cursor-pointer ml-auto"
                               onClick={() => {
-                                if (window.confirm("Are you sure?")) {
-                                  deleteMyItem(row.id);
+                                if (window.confirm("Delete this set?")) {
+                                  deleteMyItem(set.id);
                                 }
                               }}
                             >
-                              Delete
-                            </Button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </details>
-
-              {/* <h3 className="text-h3 font-semibold mb-2">{d}</h3>
-              {groupedItems[d] ? (
-                <dl className="list-disc pl-5">
-                  {Object.entries(groupedItems[d])
-                    .sort(([a], [b]) => {
-                      const orderA = EXERCISE_ORDER.indexOf(a as ExerciseType);
-                      const orderB = EXERCISE_ORDER.indexOf(b as ExerciseType);
-                      return orderA - orderB;
-                    })
-                    .map(([type, counts]) => (
-                      <div key={type} className="flex gap-2 justify-between">
-                        <dt>{EXERCISE[type as ExerciseType].label ?? type}</dt>
-                        <dd>
-                          {counts.map((c) => c.count).join(", ")} ={" "}
-                          {counts.reduce((acc, b) => acc + b.count, 0)}
-                        </dd>
-                      </div>
-                    ))}
-                </dl>
-              ) : (
-                <div>No exercises logged</div>
-              )} */}
+                              <Icon name="close" size={16} />
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                );
+              })}
             </li>
-          ))}
-        </ul>
-      </section>
+          );
+        })}
+      </ul>
     </>
   );
 }
