@@ -38,19 +38,6 @@ export function Header() {
             </li>
             <li>
               <NavLink
-                to="/history"
-                className={({ isActive }) => (isActive ? "text-on-accent" : "")}
-              >
-                {({ isActive }) => (
-                  <>
-                    <Icon name={isActive ? "clipboard-fill" : "clipboard"} />{" "}
-                    History
-                  </>
-                )}
-              </NavLink>
-            </li>
-            <li>
-              <NavLink
                 to="/stats"
                 className={({ isActive }) => (isActive ? "text-on-accent" : "")}
               >
@@ -58,6 +45,19 @@ export function Header() {
                   <>
                     <Icon name={isActive ? "chart-bar-fill" : "chart-bar"} />{" "}
                     Stats
+                  </>
+                )}
+              </NavLink>
+            </li>
+            <li>
+              <NavLink
+                to="/history"
+                className={({ isActive }) => (isActive ? "text-on-accent" : "")}
+              >
+                {({ isActive }) => (
+                  <>
+                    <Icon name={isActive ? "clipboard-fill" : "clipboard"} />{" "}
+                    History
                   </>
                 )}
               </NavLink>
