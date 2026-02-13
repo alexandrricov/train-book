@@ -291,7 +291,7 @@ export function ChartSection() {
           width: 2,
           spanGaps: true,
           points: {
-            size: 8,
+            size: 6,
             space: 10,
             stroke: EXERCISE[type].color,
             fill: EXERCISE[type].color,
