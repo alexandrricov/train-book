@@ -34,10 +34,10 @@
   --grey-base: oklch(82% 0.05 250);
   --grey-50: color-mix(in oklab, var(--grey-base), white 95%);
   --grey-100: color-mix(in oklab, var(--grey-base), white 90%);
-  --grey-300: color-mix(in oklab, var(--grey-base), white 70%);
-  --grey-600: color-mix(in oklab, var(--grey-base), black 10%);
-  --grey-800: color-mix(in oklab, var(--grey-base), black 30%);
-  --grey-900: color-mix(in oklab, var(--grey-base), black 40%);
+  --grey-300: color-mix(in oklab, var(--grey-base), white 60%);
+  --grey-600: color-mix(in oklab, var(--grey-base), black 45%);
+  --grey-800: color-mix(in oklab, var(--grey-base), black 60%);
+  --grey-900: color-mix(in oklab, var(--grey-base), black 75%);
 
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
 
