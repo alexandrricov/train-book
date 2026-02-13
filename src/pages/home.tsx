@@ -1,18 +1,82 @@
 import { useEffect, useMemo, useState } from "react";
-import { subscribeTargets } from "../firebase-db";
+import { createItemForCurrentUser, subscribeTargets } from "../firebase-db";
 import { toDateString } from "../utils/date";
 
 import { subscribeItems } from "../firebase-db";
-import type { ExerciseType, SetRowDB, TargetsAsOf } from "../types";
+import type { ExerciseType, SetRow, SetRowDB, TargetsAsOf } from "../types";
 import { EXERCISE, EXERCISE_ORDER } from "../exercises";
 import { ProgressIcon, type IconName } from "../components/icon";
+import { Select } from "../components/select";
+import { Input } from "../components/input";
+import { Button } from "../components/action";
 
 export function Home() {
   return (
-    <div>
+    <div className="flex flex-col min-h-full">
       <h1 className="sr-only">TrainBook</h1>
+      <div className="max-sm:order-last max-sm:sticky max-sm:bottom-0 max-sm:mt-auto max-sm:-mx-4 max-sm:px-4 max-sm:py-3 max-sm:bg-canvas max-sm:border-t max-sm:border-border sm:section sm:mb-6">
+        <AddForm />
+      </div>
       <TodayProgress />
     </div>
+  );
+}
+
+function AddForm() {
+  const [exType, setExType] = useState<ExerciseType>(
+    EXERCISE_ORDER[0] || "pushup"
+  );
+  const [count, setCount] = useState<number>(0);
+  const [loading, setLoading] = useState(false);
+
+  return (
+    <form
+      className="flex gap-3 items-end"
+      onSubmit={(e) => {
+        e.preventDefault();
+        setLoading(true);
+
+        createItemForCurrentUser({
+          date: toDateString(),
+          type: exType,
+          count,
+        } as SetRow)
+          .then(() => {
+            setCount(0);
+          })
+          .finally(() => setLoading(false));
+      }}
+    >
+      <Select
+        value={exType}
+        onChange={(e) => setExType(e.target.value as ExerciseType)}
+        options={EXERCISE_ORDER.map((key) => ({
+          children: EXERCISE[key].label,
+          value: key,
+        }))}
+        required
+        className="basis-1/1"
+        name="type"
+      >
+        Exercise Type
+      </Select>
+
+      <Input
+        type="number"
+        inputMode="numeric"
+        value={count || ""}
+        onChange={(e) => setCount(Number(e.target.value))}
+        min={1}
+        required
+        className="basis-1/1"
+        name="count"
+      >
+        Count
+      </Input>
+      <Button type="submit" variation="primary" disabled={loading}>
+        Add
+      </Button>
+    </form>
   );
 }
 

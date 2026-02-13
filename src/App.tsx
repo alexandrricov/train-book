@@ -35,7 +35,7 @@ function App() {
         <div className="h-full min-h-100dvh grid [grid-template-areas:'main''header'] sm:[grid-template-areas:'header''main'] grid-rows-[1fr_auto] sm:grid-rows-[auto_1fr]">
           <Header />
           <main className="overflow-y-auto" style={{ gridArea: "main" }}>
-            <div className="max-w-150 mx-auto px-4 py-4">
+            <div className="max-w-150 mx-auto px-4 py-4 h-full">
               <Outlet context={{ user }} />
             </div>
           </main>
