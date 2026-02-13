@@ -14,7 +14,7 @@ export default defineConfig(({ mode }) => {
       tailwindcss(),
       VitePWA({
         filename: "sw.js",
-        registerType: "autoUpdate",
+        registerType: "prompt",
         injectRegister: "auto",
         manifest: {
           name: "TrainBook",
@@ -38,7 +38,6 @@ export default defineConfig(({ mode }) => {
           ],
         },
         workbox: {
-          skipWaiting: true,
           clientsClaim: true,
           cleanupOutdatedCaches: true,
 

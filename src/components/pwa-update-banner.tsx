@@ -4,8 +4,6 @@ import { registerSW } from "virtual:pwa-register";
 
 function usePWAUpdate() {
   const [needRefresh, setNeedRefresh] = useState(false);
-  const [offlineReady, setOfflineReady] = useState(false);
-
   const doUpdateRef = useRef<((reload?: boolean) => void) | null>(null);
 
   useEffect(() => {
@@ -14,36 +12,38 @@ function usePWAUpdate() {
       onNeedRefresh() {
         setNeedRefresh(true);
       },
-      onOfflineReady() {
-        setOfflineReady(true);
-      },
     });
     doUpdateRef.current = updateSW;
+  }, []);
 
-    if ("serviceWorker" in navigator) {
-      const onChange = () => {
-        if (!sessionStorage.getItem("__reloaded__")) {
-          sessionStorage.setItem("__reloaded__", "1");
-          location.reload();
-        }
-      };
-      navigator.serviceWorker.addEventListener("controllerchange", onChange);
-      return () =>
-        navigator.serviceWorker.removeEventListener(
-          "controllerchange",
-          onChange
-        );
-    }
+  // Check for SW updates when app resumes from background (critical for iOS)
+  // and periodically while the app is open
+  useEffect(() => {
+    const checkUpdate = async () => {
+      const reg = await navigator.serviceWorker?.getRegistration();
+      await reg?.update();
+    };
+
+    const onVisible = () => {
+      if (document.visibilityState === "visible") {
+        checkUpdate();
+      }
+    };
+
+    document.addEventListener("visibilitychange", onVisible);
+    const interval = setInterval(checkUpdate, 60 * 1000);
+
+    return () => {
+      document.removeEventListener("visibilitychange", onVisible);
+      clearInterval(interval);
+    };
   }, []);
 
   const applyUpdate = useCallback(() => {
-    if (doUpdateRef.current) {
-      doUpdateRef.current(true);
-      setTimeout(() => location.reload(), 300);
-    }
+    doUpdateRef.current?.(true);
   }, []);
 
-  return { needRefresh, offlineReady, applyUpdate };
+  return { needRefresh, applyUpdate };
 }
 
 export function PWAUpdateBanner() {
@@ -53,7 +53,7 @@ export function PWAUpdateBanner() {
 
   return (
     <div
-      role="status"
+      role="alert"
       aria-live="polite"
       className="fixed inset-x-4 bottom-4 px-4 py-3 rounded-xl bg-grey-1000 text-grey-0 flex gap-2 items-center justify-between"
     >
