@@ -81,7 +81,7 @@ function createTargetLinesPlugin(targets: TargetsAsOf): uPlot.Plugin {
 
 export function ChartSection() {
   const [periodFilter, setPeriodFilter] = useState<PeriodTabsKey>(
-    PeriodTabsKey.month
+    PeriodTabsKey.month,
   );
   const [items, setItems] = useState<SetRow[]>([]);
   const [targets, setTargets] = useState<TargetsAsOf>({});
@@ -137,16 +137,14 @@ export function ChartSection() {
     if (items.length === 0) return [[], []];
 
     const _dates = [...new Set(items.map((item) => item.date))].sort((a, b) =>
-      a < b ? -1 : a > b ? 1 : 0
+      a < b ? -1 : a > b ? 1 : 0,
     );
 
-    const _types = [...new Set(items.map((item) => item.type))].sort(
-      (a, b) => {
-        const orderA = EXERCISE_ORDER.indexOf(a as ExerciseType);
-        const orderB = EXERCISE_ORDER.indexOf(b as ExerciseType);
-        return orderA < orderB ? -1 : orderA > orderB ? 1 : 0;
-      }
-    );
+    const _types = [...new Set(items.map((item) => item.type))].sort((a, b) => {
+      const orderA = EXERCISE_ORDER.indexOf(a as ExerciseType);
+      const orderB = EXERCISE_ORDER.indexOf(b as ExerciseType);
+      return orderA < orderB ? -1 : orderA > orderB ? 1 : 0;
+    });
 
     return [_dates, _types];
   }, [items]);
@@ -197,7 +195,7 @@ export function ChartSection() {
   const groupedItems = useMemo(
     () => groupItemsByDateAndType(items as SetRow[]),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [items, dates]
+    [items, dates],
   );
 
   const uPlotData: uPlot.AlignedData = useMemo(() => {
@@ -207,7 +205,7 @@ export function ChartSection() {
     });
 
     const seriesArrays = types.map((type) =>
-      groupedItems.map((row) => row[type] ?? null)
+      groupedItems.map((row) => row[type] ?? null),
     );
 
     return [xValues, ...seriesArrays];
@@ -294,6 +292,7 @@ export function ChartSection() {
           spanGaps: true,
           points: {
             size: 8,
+            space: 10,
             stroke: EXERCISE[type].color,
             fill: EXERCISE[type].color,
           },
@@ -313,7 +312,9 @@ export function ChartSection() {
             }
             // Skip dates with no values across all series
             const hasValue = u.series.some(
-              (_, si) => si > 0 && (u.data[si] as (number | null | undefined)[])[idx] != null
+              (_, si) =>
+                si > 0 &&
+                (u.data[si] as (number | null | undefined)[])[idx] != null,
             );
             if (!hasValue) {
               setTooltip(null);
@@ -333,6 +334,29 @@ export function ChartSection() {
 
     chartRef.current = new uPlot(opts, uPlotData, containerRef.current);
 
+    // Enable touch-drag cursor on mobile (uPlot doesn't drive cursor on
+    // touchmove when drag is disabled — we manually call setCursor)
+    const over = chartRef.current.over;
+    over.style.touchAction = "none";
+
+    const handleTouch = (e: TouchEvent) => {
+      const touch = e.touches[0];
+      if (!touch || !chartRef.current) return;
+      const rect = over.getBoundingClientRect();
+      chartRef.current.setCursor({
+        left: touch.clientX - rect.left,
+        top: touch.clientY - rect.top,
+      });
+    };
+
+    const handleTouchEnd = () => {
+      chartRef.current?.setCursor({ left: -10, top: -10 });
+    };
+
+    over.addEventListener("touchstart", handleTouch, { passive: true });
+    over.addEventListener("touchmove", handleTouch, { passive: true });
+    over.addEventListener("touchend", handleTouchEnd, { passive: true });
+
     const ro = new ResizeObserver((entries) => {
       for (const entry of entries) {
         if (chartRef.current) {
@@ -346,6 +370,9 @@ export function ChartSection() {
     ro.observe(containerRef.current);
 
     return () => {
+      over.removeEventListener("touchstart", handleTouch);
+      over.removeEventListener("touchmove", handleTouch);
+      over.removeEventListener("touchend", handleTouchEnd);
       ro.disconnect();
       if (chartRef.current) {
         chartRef.current.destroy();
@@ -385,7 +412,13 @@ export function ChartSection() {
           <article
             className="absolute z-10 p-4 bg-canvas border border-border rounded shadow pointer-events-none whitespace-nowrap"
             style={{
-              left: Math.max(90, Math.min(tooltip.x, (wrapperRef.current?.clientWidth ?? 0) - 90)),
+              left: Math.max(
+                90,
+                Math.min(
+                  tooltip.x,
+                  (wrapperRef.current?.clientWidth ?? 0) - 90,
+                ),
+              ),
               top: tooltip.y - 12,
               transform: "translate(-50%, -100%)",
             }}
