@@ -17,16 +17,4 @@ export const EXERCISE = {
   },
 };
 
-// export const EXERCISE_LABELS = {
-//   pushup: "Push-ups",
-//   pullup: "Pull-ups",
-//   squat: "Squats",
-//   abs: "Abs",
-// } as const;
-
-export const EXERCISE_ORDER: (keyof typeof EXERCISE)[] = [
-  "pushup",
-  "pullup",
-  "squat",
-  "abs",
-] as const;
+export const EXERCISE_ORDER = Object.keys(EXERCISE) as (keyof typeof EXERCISE)[];
