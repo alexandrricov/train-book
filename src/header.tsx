@@ -23,7 +23,7 @@ export function Header() {
             "max-sm:[&_:is(a,button)]:h-full max-sm:[&_:is(a,button)]:flex-col max-sm:[&_:is(a,button)]:min-w-15",
           )}
         >
-          <ul className={clsx("max-w-150 w-full fancy-nav")}>
+          <ul className={clsx("max-w-150 w-fit fancy-nav")}>
             <li>
               <NavLink
                 to="/"

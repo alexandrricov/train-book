@@ -173,7 +173,8 @@ function HitRateBar({
 }
 
 function VolumeSection({ stats }: { stats: ComputedStats }) {
-  const { weeklyTotal, weekOverWeek, allTimeTotal, grandTotal } = stats;
+  const { weeklyTotal, weekOverWeek, allTimeTotal, grandTotal, firstDate } =
+    stats;
 
   return (
     <section className="section">
@@ -233,7 +234,13 @@ function VolumeSection({ stats }: { stats: ComputedStats }) {
       <div>
         <p className="text-sm font-medium mb-2">All-time total</p>
         <p className="text-xs text-muted mb-2">
-          Total reps since you started tracking
+          Total reps since{" "}
+          {firstDate &&
+            new Date(firstDate + "T00:00:00").toLocaleDateString(undefined, {
+              day: "numeric",
+              month: "short",
+              year: "numeric",
+            })}
         </p>
         <div className="grid grid-cols-2 gap-3">
           {EXERCISE_ORDER.map((exType) => {
