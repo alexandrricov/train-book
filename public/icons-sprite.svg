@@ -102,4 +102,13 @@
     <path d="M3.75 12h16.5M12 3.75v16.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
       stroke-linejoin="round" />
   </symbol>
+
+  <symbol id="icon__chart-bar" viewBox="0 0 256 256">
+    <path fill="currentColor"
+      d="M224 200h-8V40a8 8 0 0 0-8-8h-56a8 8 0 0 0-8 8v40H96a8 8 0 0 0-8 8v40H40a8 8 0 0 0-8 8v64h-8a8 8 0 0 0 0 16h200a8 8 0 0 0 0-16ZM168 48h40v152h-40Zm-64 48h48v104h-48Zm-56 48h40v56H48Z" />
+  </symbol>
+  <symbol id="icon__chart-bar-fill" viewBox="0 0 256 256">
+    <path fill="currentColor"
+      d="M228 200h-4V40a8 8 0 0 0-8-8h-60a8 8 0 0 0-8 8v40H92a8 8 0 0 0-8 8v40H36a8 8 0 0 0-8 8v64h-4a8 8 0 0 0 0 16h204a8 8 0 0 0 0-16Z" />
+  </symbol>
 </svg>

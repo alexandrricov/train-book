@@ -7,6 +7,7 @@ import { AuthProvider } from "./providers/auth";
 
 import { Home } from "./pages/home";
 import { History } from "./pages/history";
+import { Stats } from "./pages/stats";
 import { Settings } from "./pages/settings";
 import { PWAUpdateBanner } from "./components/pwa-update-banner";
 
@@ -18,6 +19,7 @@ createRoot(document.getElementById("root")!).render(
           <Route path="/" element={<App />}>
             <Route index element={<Home />} />
             <Route path="history" element={<History />} />
+            <Route path="stats" element={<Stats />} />
             <Route path="settings" element={<Settings />} />
             <Route path="*" element={<Navigate to="/" />} />
           </Route>

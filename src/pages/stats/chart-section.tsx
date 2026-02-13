@@ -1,12 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { SetRow, ExerciseType, TargetsAsOf } from "../types";
-import { subscribeItems, subscribeTargets } from "../firebase-db";
+import type { SetRow, ExerciseType, TargetsAsOf } from "../../types";
 import uPlot from "uplot";
 import "uplot/dist/uPlot.min.css";
-import { EXERCISE, EXERCISE_ORDER } from "../exercises";
-import { Icon } from "../components/icon";
-import { Select } from "../components/select";
-import { toDateString } from "../utils/date";
+import { EXERCISE, EXERCISE_ORDER } from "../../exercises";
+import { Icon } from "../../components/icon";
+import { Select } from "../../components/select";
+import { toDateString } from "../../utils/date";
 
 const PeriodTabsKey = {
   week: "1w",
@@ -79,52 +78,44 @@ function createTargetLinesPlugin(targets: TargetsAsOf): uPlot.Plugin {
   };
 }
 
-export function ChartSection() {
+export function ChartSection({
+  allItems,
+  targets,
+}: {
+  allItems: SetRow[];
+  targets: TargetsAsOf;
+}) {
   const [periodFilter, setPeriodFilter] = useState<PeriodTabsKey>(
     PeriodTabsKey.month,
   );
-  const [items, setItems] = useState<SetRow[]>([]);
-  const [targets, setTargets] = useState<TargetsAsOf>({});
   const wrapperRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<uPlot | null>(null);
   const [tooltip, setTooltip] = useState<TooltipState | null>(null);
   const [themeKey, setThemeKey] = useState(0);
 
-  useEffect(() => {
-    let days;
+  const items = useMemo(() => {
+    let cutoff: string | undefined;
     switch (periodFilter) {
       case PeriodTabsKey.week: {
         const d = new Date();
         d.setDate(d.getDate() - 6);
-        days = toDateString(d);
+        cutoff = toDateString(d);
         break;
       }
       case PeriodTabsKey.month: {
         const d = new Date();
         d.setMonth(d.getMonth() - 1);
         d.setDate(d.getDate() + 1);
-        days = toDateString(d);
+        cutoff = toDateString(d);
         break;
       }
       case PeriodTabsKey.all:
-        days = undefined;
-        break;
-      default:
-        days = undefined;
+        return allItems;
     }
-    const unsubItems = subscribeItems(setItems, days);
-    return () => {
-      unsubItems();
-    };
-  }, [periodFilter]);
-
-  useEffect(() => {
-    const unsubscribeTargets = subscribeTargets(toDateString(), setTargets);
-    return () => {
-      unsubscribeTargets();
-    };
-  }, []);
+    if (!cutoff) return allItems;
+    return allItems.filter((item) => item.date >= cutoff);
+  }, [allItems, periodFilter]);
 
   useEffect(() => {
     const mq = window.matchMedia("(prefers-color-scheme: dark)");
@@ -392,7 +383,7 @@ export function ChartSection() {
     : [];
 
   return (
-    <section>
+    <section className="section">
       <header className="flex items-center justify-between mb-4">
         <h2 className="text-h2">History Chart</h2>
         <Select

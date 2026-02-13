@@ -291,6 +291,18 @@ export async function importMyItemsFromJSON(
   await flush();
 }
 
+export function subscribeAllTargets(
+  cb: (targets: TargetRowDB[]) => void
+): () => void {
+  const uid = auth.currentUser?.uid;
+  if (!uid) throw new Error("Not authenticated");
+  const col = collection(db, "users", uid, "targets");
+  const q = query(col, orderBy("date", "asc"));
+  return onSnapshot(q, (snap) => {
+    cb(snap.docs.map((d) => ({ id: d.id, ...d.data() })) as TargetRowDB[]);
+  });
+}
+
 export async function setTarget(
   type: ExerciseType,
   value: number,

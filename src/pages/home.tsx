@@ -1,4 +1,3 @@
-import { ChartSection } from "../sections/chart-section";
 import { useEffect, useMemo, useState } from "react";
 import { subscribeTargets } from "../firebase-db";
 import { toDateString } from "../utils/date";
@@ -13,7 +12,6 @@ export function Home() {
     <div>
       <h1 className="sr-only">TrainBook</h1>
       <TodayProgress />
-      <ChartSection />
     </div>
   );
 }
