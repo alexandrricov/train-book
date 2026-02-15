@@ -99,7 +99,8 @@ export function ChartSection({
     switch (periodFilter) {
       case PeriodTabsKey.week: {
         const d = new Date();
-        d.setDate(d.getDate() - 6);
+        const dow = d.getDay(); // 0=Sun, 1=Mon … 6=Sat
+        d.setDate(d.getDate() - (dow === 0 ? 6 : dow - 1));
         cutoff = toDateString(d);
         break;
       }
@@ -141,14 +142,27 @@ export function ChartSection({
   }, [items]);
 
   function groupItemsByDateAndType(items: SetRow[]): DailyTotals[] {
-    const startYMD =
-      dates.length > 0
-        ? dates.reduce((min, cur) => (cur < min ? cur : min))
-        : toDateString(new Date());
+    let startYMD: string;
+    let endYMD: string;
+
+    if (periodFilter === PeriodTabsKey.week) {
+      // Always show full Mon–Sun of the current week
+      const monday = new Date();
+      const dow = monday.getDay();
+      monday.setDate(monday.getDate() - (dow === 0 ? 6 : dow - 1));
+      startYMD = toDateString(monday);
+      const sunday = new Date(monday);
+      sunday.setDate(monday.getDate() + 6);
+      endYMD = toDateString(sunday);
+    } else {
+      startYMD =
+        dates.length > 0
+          ? dates.reduce((min, cur) => (cur < min ? cur : min))
+          : toDateString(new Date());
+      endYMD = toDateString(new Date());
+    }
 
     const startDate = ymdToUTCDate(startYMD);
-    const todayUTC = new Date();
-    const endYMD = toDateString(todayUTC);
     const endDate = ymdToUTCDate(endYMD);
 
     const byDate: Map<SetRow["date"], Map<ExerciseType, number>> = new Map();
@@ -186,7 +200,7 @@ export function ChartSection({
   const groupedItems = useMemo(
     () => groupItemsByDateAndType(items as SetRow[]),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [items, dates],
+    [items, dates, periodFilter],
   );
 
   const uPlotData: uPlot.AlignedData = useMemo(() => {
@@ -261,7 +275,9 @@ export function ChartSection({
           ticks: { stroke: gridColor, width: 1 },
           values: (_: uPlot, ticks: number[]) =>
             ticks.map((ts) => formatTick(new Date(ts * 1000), periodFilter)),
-          space: periodFilter === PeriodTabsKey.week ? 60 : 80,
+          ...(periodFilter === PeriodTabsKey.week
+            ? { splits: () => uPlotData[0] as number[] }
+            : { space: 80 }),
         },
         {
           stroke: textColor,
