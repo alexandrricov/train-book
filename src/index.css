@@ -9,7 +9,6 @@
   --color-border: light-dark(var(--grey-300), var(--grey-600));
   --color-muted: light-dark(var(--grey-600), var(--grey-300));
   --color-on-accent: #fff;
-  --color-surface-inverse: #000;
 
   --color-brand: #3881ff;
   --color-brand-light: color-mix(in oklab, var(--color-brand), white 10%);
@@ -98,7 +97,8 @@ dialog::backdrop {
     & li {
       padding-inline: var(--padding);
       z-index: 1;
-      anchor-name: var(--anchor-name-hover, --noop-hover),
+      anchor-name:
+        var(--anchor-name-hover, --noop-hover),
         var(--anchor-name-active, --noop-active);
     }
     & li:hover {

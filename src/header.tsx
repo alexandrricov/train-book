@@ -13,13 +13,14 @@ export function Header() {
       <div
         className={clsx(
           "flex items-center justify-between p-4 max-w-150 mx-auto",
-          "max-sm:pt-2 max-sm:pb-[max(16px,env(safe-area-inset-bottom))] max-sm:pl-[max(16px,env(safe-area-inset-left))] max-sm:pr-[max(16px,env(safe-area-inset-right))]",
+          "max-sm:pt-2 max-sm:pb-[max(8px,env(safe-area-inset-bottom))] max-sm:pl-[max(16px,env(safe-area-inset-left))] max-sm:pr-[max(16px,env(safe-area-inset-right))]",
         )}
       >
         <nav
           className={clsx(
             "flex justify-center items-stretch w-full",
-            "[&_:is(a,button)]:flex [&_:is(a,button)]:p-2 [&_:is(a,button)]:gap-1 [&_:is(a,button)]:items-center [&_:is(a,button)]:justify-center [&_:is(a,button)]:text-sm [&_:is(a,button)]:transition-colors",
+            "[&_:is(a,button)]:flex [&_:is(a,button)]:p-2 [&_:is(a,button)]:items-center [&_:is(a,button)]:justify-center [&_:is(a,button)]:text-sm [&_:is(a,button)]:transition-colors",
+            "sm:[&_:is(a,button)]:gap-1",
             "max-sm:[&_:is(a,button)]:h-full max-sm:[&_:is(a,button)]:flex-col max-sm:[&_:is(a,button)]:min-w-15",
           )}
         >
