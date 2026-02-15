@@ -14,7 +14,7 @@ export default defineConfig(({ mode }) => {
       tailwindcss(),
       VitePWA({
         filename: "sw.js",
-        registerType: "prompt",
+        registerType: "autoUpdate",
         injectRegister: "auto",
         manifest: {
           name: "TrainBook",

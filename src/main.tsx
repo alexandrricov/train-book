@@ -9,7 +9,6 @@ import { Home } from "./pages/home";
 import { History } from "./pages/history";
 import { Stats } from "./pages/stats";
 import { Settings } from "./pages/settings";
-import { PWAUpdateBanner } from "./components/pwa-update-banner";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -25,7 +24,6 @@ createRoot(document.getElementById("root")!).render(
           </Route>
         </Routes>
       </BrowserRouter>
-      <PWAUpdateBanner />
     </AuthProvider>
   </StrictMode>
 );
