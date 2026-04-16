@@ -14,6 +14,7 @@ import type { ExerciseType, TargetsAsOf } from "../types";
 import { toDateString } from "../utils/date";
 import { auth } from "../firebase";
 import { signOut, type User } from "firebase/auth";
+import { ADD_VARIANT_OPTIONS, useAddVariant } from "./home-variant";
 
 export function Settings() {
   const { user } = useOutletContext<{ user: User }>();
@@ -43,6 +44,7 @@ export function Settings() {
 
       <Targets />
       <AddTarget />
+      <AddFormVariant />
       <section>
         <h2 className="text-h2 mb-4">Import/Export data</h2>
         <div className="flex items-center gap-4">
@@ -96,6 +98,58 @@ function Targets() {
           </Fragment>
         ))}
       </dl>
+    </section>
+  );
+}
+
+function AddFormVariant() {
+  const [variant, setVariant] = useAddVariant();
+
+  return (
+    <section className="mb-6">
+      <h2 className="text-h2 mb-4">Add form style</h2>
+      <ul role="radiogroup" aria-label="Add form style" className="grid gap-2">
+        {ADD_VARIANT_OPTIONS.map((option) => {
+          const selected = option.value === variant;
+          return (
+            <li key={option.value}>
+              <button
+                type="button"
+                role="radio"
+                aria-checked={selected}
+                onClick={() => setVariant(option.value)}
+                className="w-full text-left p-3 rounded-xl border transition-colors cursor-pointer"
+                style={{
+                  borderColor: selected
+                    ? "var(--color-brand)"
+                    : "var(--color-border)",
+                  backgroundColor: selected
+                    ? "color-mix(in oklab, var(--color-brand), transparent 88%)"
+                    : "transparent",
+                }}
+              >
+                <div className="flex items-center justify-between">
+                  <span className="font-medium">{option.title}</span>
+                  <span
+                    aria-hidden="true"
+                    className="size-4 rounded-full border flex items-center justify-center"
+                    style={{
+                      borderColor: selected
+                        ? "var(--color-brand)"
+                        : "var(--color-border)",
+                    }}
+                  >
+                    {selected && (
+                      <span className="size-2 rounded-full bg-brand" />
+                    )}
+                  </span>
+                </div>
+                <p className="text-sm text-muted mt-1">{option.description}</p>
+              </button>
+            </li>
+          );
+        })}
+      </ul>
     </section>
   );
 }
