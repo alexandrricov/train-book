@@ -157,7 +157,7 @@ function VariantA() {
           <button
             type="button"
             onClick={() => setCount((c) => Math.max(0, c - 10))}
-            className="w-14 h-14 rounded-full bg-canvas2 flex items-center justify-center text-lg font-medium tabular-nums active:scale-95 transition-transform"
+            className="w-12 h-12 rounded-full bg-canvas2 flex items-center justify-center text-base font-medium tabular-nums active:scale-95 transition-transform"
             aria-label="Subtract 10"
             disabled={count === 0}
           >
@@ -165,17 +165,8 @@ function VariantA() {
           </button>
           <button
             type="button"
-            onClick={() => setCount((c) => Math.max(0, c - 5))}
-            className="w-14 h-14 rounded-full bg-canvas2 flex items-center justify-center text-lg font-medium tabular-nums active:scale-95 transition-transform"
-            aria-label="Subtract 5"
-            disabled={count === 0}
-          >
-            -5
-          </button>
-          <button
-            type="button"
             onClick={() => setCount((c) => Math.max(0, c - 1))}
-            className="w-14 h-14 rounded-full bg-canvas2 flex items-center justify-center text-2xl active:scale-95 transition-transform"
+            className="w-12 h-12 rounded-full bg-canvas2 flex items-center justify-center text-2xl active:scale-95 transition-transform"
             aria-label="Decrement"
             disabled={count === 0}
           >
@@ -196,23 +187,15 @@ function VariantA() {
           <button
             type="button"
             onClick={() => setCount((c) => c + 1)}
-            className="w-14 h-14 rounded-full bg-canvas2 flex items-center justify-center text-2xl active:scale-95 transition-transform"
+            className="w-12 h-12 rounded-full bg-canvas2 flex items-center justify-center text-2xl active:scale-95 transition-transform"
             aria-label="Increment"
           >
             +
           </button>
           <button
             type="button"
-            onClick={() => setCount((c) => c + 5)}
-            className="w-14 h-14 rounded-full bg-canvas2 flex items-center justify-center text-lg font-medium tabular-nums active:scale-95 transition-transform"
-            aria-label="Add 5"
-          >
-            +5
-          </button>
-          <button
-            type="button"
             onClick={() => setCount((c) => c + 10)}
-            className="w-14 h-14 rounded-full bg-canvas2 flex items-center justify-center text-lg font-medium tabular-nums active:scale-95 transition-transform"
+            className="w-12 h-12 rounded-full bg-canvas2 flex items-center justify-center text-base font-medium tabular-nums active:scale-95 transition-transform"
             aria-label="Add 10"
           >
             +10
