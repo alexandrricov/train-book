@@ -53,7 +53,7 @@ function useTodayData() {
     const sorted = [...items].sort(
       (a, b) =>
         (a.createdAt?.toDate().getTime() ?? 0) -
-        (b.createdAt?.toDate().getTime() ?? 0)
+        (b.createdAt?.toDate().getTime() ?? 0),
     );
     for (const item of sorted) {
       (grouped[item.type] ??= []).push(item.count);
@@ -137,7 +137,9 @@ function VariantA() {
               className="flex flex-col items-center gap-1 py-3 rounded-xl border transition-all"
               style={{
                 borderColor: active ? ex.color : "transparent",
-                backgroundColor: active ? `${ex.color}22` : "var(--color-canvas2)",
+                backgroundColor: active
+                  ? `${ex.color}22`
+                  : "var(--color-canvas2)",
                 color: active ? ex.color : "var(--color-canvas-text)",
               }}
               aria-pressed={active}
@@ -151,15 +153,35 @@ function VariantA() {
       </div>
 
       <div className="flex items-center justify-center gap-3">
-        <button
-          type="button"
-          onClick={() => setCount((c) => Math.max(0, c - 1))}
-          className="w-14 h-14 rounded-full bg-canvas2 flex items-center justify-center text-2xl active:scale-95 transition-transform"
-          aria-label="Decrement"
-          disabled={count === 0}
-        >
-          −
-        </button>
+        <div className="flex items-center gap-2 basis-full justify-center">
+          <button
+            type="button"
+            onClick={() => setCount((c) => Math.max(0, c - 10))}
+            className="w-14 h-14 rounded-full bg-canvas2 flex items-center justify-center text-lg font-medium tabular-nums active:scale-95 transition-transform"
+            aria-label="Subtract 10"
+            disabled={count === 0}
+          >
+            -10
+          </button>
+          <button
+            type="button"
+            onClick={() => setCount((c) => Math.max(0, c - 5))}
+            className="w-14 h-14 rounded-full bg-canvas2 flex items-center justify-center text-lg font-medium tabular-nums active:scale-95 transition-transform"
+            aria-label="Subtract 5"
+            disabled={count === 0}
+          >
+            -5
+          </button>
+          <button
+            type="button"
+            onClick={() => setCount((c) => Math.max(0, c - 1))}
+            className="w-14 h-14 rounded-full bg-canvas2 flex items-center justify-center text-2xl active:scale-95 transition-transform"
+            aria-label="Decrement"
+            disabled={count === 0}
+          >
+            -
+          </button>
+        </div>
         <input
           type="number"
           inputMode="numeric"
@@ -170,14 +192,32 @@ function VariantA() {
           className="w-24 text-center text-[48px] font-semibold tabular-nums bg-transparent outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none [-moz-appearance:textfield]"
           aria-label="Count"
         />
-        <button
-          type="button"
-          onClick={() => setCount((c) => c + 1)}
-          className="w-14 h-14 rounded-full bg-canvas2 flex items-center justify-center text-2xl active:scale-95 transition-transform"
-          aria-label="Increment"
-        >
-          +
-        </button>
+        <div className="flex items-center gap-2 basis-full justify-center">
+          <button
+            type="button"
+            onClick={() => setCount((c) => c + 1)}
+            className="w-14 h-14 rounded-full bg-canvas2 flex items-center justify-center text-2xl active:scale-95 transition-transform"
+            aria-label="Increment"
+          >
+            +
+          </button>
+          <button
+            type="button"
+            onClick={() => setCount((c) => c + 5)}
+            className="w-14 h-14 rounded-full bg-canvas2 flex items-center justify-center text-lg font-medium tabular-nums active:scale-95 transition-transform"
+            aria-label="Add 5"
+          >
+            +5
+          </button>
+          <button
+            type="button"
+            onClick={() => setCount((c) => c + 10)}
+            className="w-14 h-14 rounded-full bg-canvas2 flex items-center justify-center text-lg font-medium tabular-nums active:scale-95 transition-transform"
+            aria-label="Add 10"
+          >
+            +10
+          </button>
+        </div>
       </div>
 
       <Button
@@ -262,9 +302,7 @@ function VariantBTile({
           <div className="flex-1 min-w-0">
             <p className="font-medium">{exercise.label}</p>
             {sets.length > 0 && (
-              <p className="text-xs text-muted truncate">
-                {sets.join(" · ")}
-              </p>
+              <p className="text-xs text-muted truncate">{sets.join(" · ")}</p>
             )}
           </div>
           <span className="tabular-nums text-sm text-muted">
@@ -417,12 +455,11 @@ export function TodayProgress() {
   const ordered = useMemo(
     () =>
       EXERCISE_ORDER.filter(
-        (type) => (countsByType[type]?.length ?? 0) > 0
+        (type) => (countsByType[type]?.length ?? 0) > 0,
       ).map(
-        (type) =>
-          [type, countsByType[type] ?? []] as [ExerciseType, number[]]
+        (type) => [type, countsByType[type] ?? []] as [ExerciseType, number[]],
       ),
-    [countsByType]
+    [countsByType],
   );
 
   return (
@@ -463,9 +500,7 @@ export function TodayProgress() {
                     />
                   </div>
                 )}
-                <p className="mt-1 text-sm opacity-50">
-                  {counts.join(" · ")}
-                </p>
+                <p className="mt-1 text-sm opacity-50">{counts.join(" · ")}</p>
               </li>
             );
           })}
