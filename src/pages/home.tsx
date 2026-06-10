@@ -152,27 +152,7 @@ function VariantA() {
         })}
       </div>
 
-      <div className="flex items-center justify-center gap-3">
-        <div className="flex items-center gap-2 basis-full justify-center">
-          <button
-            type="button"
-            onClick={() => setCount((c) => Math.max(0, c - 10))}
-            className="w-12 h-12 rounded-full bg-canvas2 flex items-center justify-center text-base font-medium tabular-nums active:scale-95 transition-transform"
-            aria-label="Subtract 10"
-            disabled={count === 0}
-          >
-            -10
-          </button>
-          <button
-            type="button"
-            onClick={() => setCount((c) => Math.max(0, c - 1))}
-            className="w-12 h-12 rounded-full bg-canvas2 flex items-center justify-center text-2xl active:scale-95 transition-transform"
-            aria-label="Decrement"
-            disabled={count === 0}
-          >
-            -
-          </button>
-        </div>
+      <div className="flex items-center justify-between gap-3">
         <input
           type="number"
           inputMode="numeric"
@@ -180,26 +160,21 @@ function VariantA() {
           onChange={(e) => setCount(Number(e.target.value))}
           placeholder="0"
           min={0}
-          className="w-24 text-center text-[48px] font-semibold tabular-nums bg-transparent outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none [-moz-appearance:textfield]"
+          className="flex-1 min-w-0 h-12 px-3 rounded-2xl bg-canvas2 text-center text-[40px] font-semibold tabular-nums outline-none focus:ring-2 focus:ring-border [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none [-moz-appearance:textfield]"
           aria-label="Count"
         />
-        <div className="flex items-center gap-2 basis-full justify-center">
-          <button
-            type="button"
-            onClick={() => setCount((c) => c + 1)}
-            className="w-12 h-12 rounded-full bg-canvas2 flex items-center justify-center text-2xl active:scale-95 transition-transform"
-            aria-label="Increment"
-          >
-            +
-          </button>
-          <button
-            type="button"
-            onClick={() => setCount((c) => c + 10)}
-            className="w-12 h-12 rounded-full bg-canvas2 flex items-center justify-center text-base font-medium tabular-nums active:scale-95 transition-transform"
-            aria-label="Add 10"
-          >
-            +10
-          </button>
+        <div className="flex items-center gap-2">
+          {[1, 5, 10].map((delta) => (
+            <button
+              key={delta}
+              type="button"
+              onClick={() => setCount((c) => c + delta)}
+              className="w-12 h-12 rounded-full bg-canvas2 flex items-center justify-center text-base font-medium tabular-nums active:scale-95 transition-transform"
+              aria-label={`Add ${delta}`}
+            >
+              +{delta}
+            </button>
+          ))}
         </div>
       </div>
 
