@@ -100,9 +100,59 @@ export function Home() {
   );
 }
 
+const STEP_BTN_CLASS =
+  "w-12 h-12 rounded-full bg-canvas2 flex items-center justify-center text-base font-medium tabular-nums active:scale-95 transition-transform shrink-0";
+
+// w-12 button = 48px, gap-2 = 8px
+const SINGLE_W = 48;
+const TRIO_W = 48 * 3 + 8 * 2;
+
+/**
+ * A fixed-height cluster that morphs between a single round button and a trio
+ * of step buttons. Width animates while the two layouts cross-fade, so the
+ * input next to it keeps a constant size and simply slides.
+ */
+function MorphCluster({
+  pin,
+  showTrio,
+  single,
+  trio,
+}: {
+  pin: "left" | "right";
+  showTrio: boolean;
+  single: React.ReactNode;
+  trio: React.ReactNode;
+}) {
+  const edge = pin === "left" ? "left-0" : "right-0";
+  return (
+    <div
+      className="relative h-12 shrink-0 transition-[width] duration-300 ease-out"
+      style={{ width: showTrio ? TRIO_W : SINGLE_W }}
+    >
+      <div
+        className={`absolute top-0 ${edge} flex items-center gap-2 transition-opacity duration-200 ${
+          showTrio ? "opacity-0 pointer-events-none" : "opacity-100"
+        }`}
+        aria-hidden={showTrio}
+      >
+        {single}
+      </div>
+      <div
+        className={`absolute top-0 ${edge} flex items-center gap-2 transition-opacity duration-200 ${
+          showTrio ? "opacity-100" : "opacity-0 pointer-events-none"
+        }`}
+        aria-hidden={!showTrio}
+      >
+        {trio}
+      </div>
+    </div>
+  );
+}
+
 function VariantA() {
   const [exType, setExType] = useState<ExerciseType>(loadLastType);
   const [count, setCount] = useState<number>(0);
+  const [mode, setMode] = useState<"add" | "subtract">("add");
   const [loading, setLoading] = useState(false);
   const exercise = EXERCISE[exType];
 
@@ -110,6 +160,8 @@ function VariantA() {
     setExType(t);
     saveLastType(t);
   }
+
+  const adjust = (delta: number) => setCount((c) => Math.max(0, c + delta));
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -152,7 +204,37 @@ function VariantA() {
         })}
       </div>
 
-      <div className="flex items-center justify-between gap-3">
+      <div className="flex items-center gap-2">
+        <MorphCluster
+          pin="left"
+          showTrio={mode === "subtract"}
+          single={
+            <button
+              type="button"
+              onClick={() => setMode("subtract")}
+              className={STEP_BTN_CLASS}
+              aria-label="Show subtract buttons"
+            >
+              <span className="text-2xl leading-none">−</span>
+            </button>
+          }
+          trio={
+            <>
+              {[10, 5, 1].map((delta) => (
+                <button
+                  key={delta}
+                  type="button"
+                  onClick={() => adjust(-delta)}
+                  className={STEP_BTN_CLASS}
+                  aria-label={`Subtract ${delta}`}
+                >
+                  −{delta}
+                </button>
+              ))}
+            </>
+          }
+        />
+
         <input
           type="number"
           inputMode="numeric"
@@ -163,19 +245,36 @@ function VariantA() {
           className="flex-1 min-w-0 h-12 px-3 rounded-2xl bg-canvas2 text-center text-[40px] font-semibold tabular-nums outline-none focus:ring-2 focus:ring-border [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none [-moz-appearance:textfield]"
           aria-label="Count"
         />
-        <div className="flex items-center gap-2">
-          {[1, 5, 10].map((delta) => (
+
+        <MorphCluster
+          pin="right"
+          showTrio={mode === "add"}
+          single={
             <button
-              key={delta}
               type="button"
-              onClick={() => setCount((c) => c + delta)}
-              className="w-12 h-12 rounded-full bg-canvas2 flex items-center justify-center text-base font-medium tabular-nums active:scale-95 transition-transform"
-              aria-label={`Add ${delta}`}
+              onClick={() => setMode("add")}
+              className={STEP_BTN_CLASS}
+              aria-label="Show add buttons"
             >
-              +{delta}
+              <span className="text-2xl leading-none">+</span>
             </button>
-          ))}
-        </div>
+          }
+          trio={
+            <>
+              {[1, 5, 10].map((delta) => (
+                <button
+                  key={delta}
+                  type="button"
+                  onClick={() => adjust(delta)}
+                  className={STEP_BTN_CLASS}
+                  aria-label={`Add ${delta}`}
+                >
+                  +{delta}
+                </button>
+              ))}
+            </>
+          }
+        />
       </div>
 
       <Button
@@ -312,9 +411,13 @@ function VariantBTile({
   );
 }
 
+const HERO_STEP_BTN_CLASS =
+  "py-2 rounded-lg bg-on-accent/20 hover:bg-on-accent/30 active:scale-95 transition font-medium tabular-nums";
+
 function VariantC() {
   const [exType, setExType] = useState<ExerciseType>(loadLastType);
   const [count, setCount] = useState<number>(0);
+  const [mode, setMode] = useState<"add" | "subtract">("add");
   const [loading, setLoading] = useState(false);
   const exercise = EXERCISE[exType];
 
@@ -322,6 +425,8 @@ function VariantC() {
     setExType(t);
     saveLastType(t);
   }
+
+  const adjust = (delta: number) => setCount((c) => Math.max(0, c + delta));
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -381,17 +486,62 @@ function VariantC() {
           aria-label="Count"
         />
 
-        <div className="grid grid-cols-4 gap-2 w-full">
-          {[1, 5, 10, 20].map((delta) => (
+        <div className="grid w-full">
+          <div
+            className={`col-start-1 row-start-1 grid grid-cols-5 gap-2 transition-opacity duration-200 ${
+              mode === "add" ? "opacity-100" : "opacity-0 pointer-events-none"
+            }`}
+            aria-hidden={mode !== "add"}
+          >
             <button
-              key={delta}
               type="button"
-              onClick={() => setCount((c) => c + delta)}
-              className="py-2 rounded-lg bg-on-accent/20 hover:bg-on-accent/30 active:scale-95 transition font-medium tabular-nums"
+              onClick={() => setMode("subtract")}
+              className={HERO_STEP_BTN_CLASS}
+              aria-label="Show subtract buttons"
             >
-              +{delta}
+              −
             </button>
-          ))}
+            {[1, 5, 10, 20].map((delta) => (
+              <button
+                key={delta}
+                type="button"
+                onClick={() => adjust(delta)}
+                className={HERO_STEP_BTN_CLASS}
+                aria-label={`Add ${delta}`}
+              >
+                +{delta}
+              </button>
+            ))}
+          </div>
+
+          <div
+            className={`col-start-1 row-start-1 grid grid-cols-5 gap-2 transition-opacity duration-200 ${
+              mode === "subtract"
+                ? "opacity-100"
+                : "opacity-0 pointer-events-none"
+            }`}
+            aria-hidden={mode !== "subtract"}
+          >
+            {[20, 10, 5, 1].map((delta) => (
+              <button
+                key={delta}
+                type="button"
+                onClick={() => adjust(-delta)}
+                className={HERO_STEP_BTN_CLASS}
+                aria-label={`Subtract ${delta}`}
+              >
+                −{delta}
+              </button>
+            ))}
+            <button
+              type="button"
+              onClick={() => setMode("add")}
+              className={HERO_STEP_BTN_CLASS}
+              aria-label="Show add buttons"
+            >
+              +
+            </button>
+          </div>
         </div>
 
         <button
