@@ -26,10 +26,14 @@ export function Header() {
             "flex justify-center items-stretch w-full",
             "[&_:is(a,button)]:flex [&_:is(a,button)]:p-2 [&_:is(a,button)]:items-center [&_:is(a,button)]:justify-center [&_:is(a,button)]:text-sm [&_:is(a,button)]:transition-colors",
             "sm:[&_:is(a,button)]:gap-1",
-            "max-sm:[&_:is(a,button)]:h-full max-sm:[&_:is(a,button)]:flex-col max-sm:[&_:is(a,button)]:min-w-15",
+            "max-sm:[&_:is(a,button)]:h-full max-sm:[&_:is(a,button)]:flex-col max-sm:[&_:is(a,button)]:w-full max-sm:[&_:is(a,button)]:min-w-0 max-sm:[&_:is(a,button)]:px-1",
           )}
         >
-          <ul className={clsx("max-w-150 w-fit fancy-nav")}>
+          <ul
+            className={clsx(
+              "max-w-150 w-fit max-sm:w-full fancy-nav max-sm:[&_li]:flex-1 max-sm:[--padding:3px]"
+            )}
+          >
             <li>
               <NavLink
                 to="/"
