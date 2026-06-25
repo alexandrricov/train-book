@@ -4,13 +4,23 @@ import {
   setMyLeaderboardVisibility,
 } from "../../firebase-db";
 
-/** Read + toggle whether the current user appears on the leaderboard. */
-export function useLeaderboardVisibility(): [boolean, (next: boolean) => void] {
+/**
+ * Read + toggle whether the current user appears on the leaderboard.
+ * `ready` becomes true once the stored value has loaded — use it to avoid
+ * animating the toggle when the initial server value settles.
+ */
+export function useLeaderboardVisibility(): [
+  boolean,
+  (next: boolean) => void,
+  boolean,
+] {
   const [isPublic, setIsPublic] = useState(false);
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
     const unsub = subscribeMyProfile((p) => {
       setIsPublic(p?.leaderboardPublic ?? false);
+      setReady(true);
     });
     return () => unsub();
   }, []);
@@ -20,5 +30,5 @@ export function useLeaderboardVisibility(): [boolean, (next: boolean) => void] {
     setMyLeaderboardVisibility(next).catch(() => setIsPublic(!next));
   };
 
-  return [isPublic, update];
+  return [isPublic, update, ready];
 }

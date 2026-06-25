@@ -80,7 +80,14 @@ export function Settings() {
 }
 
 function PublicProfile() {
-  const [isPublic, setPublic] = useLeaderboardVisibility();
+  const [isPublic, setPublic, ready] = useLeaderboardVisibility();
+  // Only animate the knob on real toggles, not when the stored value loads.
+  const [animate, setAnimate] = useState(false);
+  useEffect(() => {
+    if (!ready) return;
+    const id = requestAnimationFrame(() => setAnimate(true));
+    return () => cancelAnimationFrame(id);
+  }, [ready]);
 
   return (
     <section className="section">
@@ -104,7 +111,8 @@ function PublicProfile() {
         >
           <span
             className={clsx(
-              "absolute top-0.5 left-0.5 size-5 rounded-full shadow-sm transition-all",
+              "absolute top-0.5 left-0.5 size-5 rounded-full shadow-sm",
+              animate && "transition-all",
               isPublic ? "bg-brand translate-x-5" : "bg-muted"
             )}
           />

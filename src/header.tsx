@@ -1,8 +1,13 @@
-import { NavLink } from "react-router";
+import { NavLink, Link, useLocation } from "react-router";
 import { Icon } from "./components/icon";
 import { clsx } from "clsx";
 
 export function Header() {
+  const { pathname } = useLocation();
+  // Profile pages (/u/:uid) belong to the leaderboard section.
+  const ranksActive =
+    pathname === "/leaderboard" || pathname.startsWith("/u/");
+
   return (
     <header
       className={clsx(
@@ -51,16 +56,13 @@ export function Header() {
               </NavLink>
             </li>
             <li>
-              <NavLink
+              <Link
                 to="/leaderboard"
-                className={({ isActive }) => (isActive ? "text-on-accent" : "")}
+                aria-current={ranksActive ? "page" : undefined}
+                className={ranksActive ? "text-on-accent" : ""}
               >
-                {({ isActive }) => (
-                  <>
-                    <Icon name={isActive ? "trophy-fill" : "trophy"} /> Ranks
-                  </>
-                )}
-              </NavLink>
+                <Icon name={ranksActive ? "trophy-fill" : "trophy"} /> Ranks
+              </Link>
             </li>
             <li>
               <NavLink
