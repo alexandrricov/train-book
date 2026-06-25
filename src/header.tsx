@@ -52,6 +52,18 @@ export function Header() {
             </li>
             <li>
               <NavLink
+                to="/leaderboard"
+                className={({ isActive }) => (isActive ? "text-on-accent" : "")}
+              >
+                {({ isActive }) => (
+                  <>
+                    <Icon name={isActive ? "trophy-fill" : "trophy"} /> Ranks
+                  </>
+                )}
+              </NavLink>
+            </li>
+            <li>
+              <NavLink
                 to="/history"
                 className={({ isActive }) => (isActive ? "text-on-accent" : "")}
               >

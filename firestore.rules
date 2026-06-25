@@ -1,0 +1,25 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Private user data — only the owner can read or write.
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+
+      match /items/{itemId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+      match /targets/{targetId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+    }
+
+    // Public leaderboard slice — readable by any signed-in user,
+    // writable only by its owner. Contains no raw logs, only summary stats.
+    match /leaderboard/{userId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+  }
+}

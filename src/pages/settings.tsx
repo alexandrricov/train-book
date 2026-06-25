@@ -1,5 +1,6 @@
 import { Fragment, useEffect, useState } from "react";
 import { useOutletContext } from "react-router";
+import { clsx } from "clsx";
 import { Button } from "../components/action";
 import { Input } from "../components/input";
 import { Select } from "../components/select";
@@ -15,6 +16,7 @@ import { toDateString } from "../utils/date";
 import { auth } from "../firebase";
 import { signOut, type User } from "firebase/auth";
 import { ADD_VARIANT_OPTIONS, useAddVariant } from "./home-variant";
+import { useLeaderboardVisibility } from "./leaderboard/use-visibility";
 
 export function Settings() {
   const { user } = useOutletContext<{ user: User }>();
@@ -42,6 +44,7 @@ export function Settings() {
         </Button>
       </section>
 
+      <PublicProfile />
       <Targets />
       <AddTarget />
       <AddFormVariant />
@@ -73,6 +76,41 @@ export function Settings() {
         </div>
       </section>
     </>
+  );
+}
+
+function PublicProfile() {
+  const [isPublic, setPublic] = useLeaderboardVisibility();
+
+  return (
+    <section className="section">
+      <h2 className="text-h2 mb-1">Public profile</h2>
+      <p className="text-sm text-muted mb-4">
+        When on, your name, current streak and weekly volume appear on the
+        leaderboard, and other members can open your profile. Your detailed logs
+        and targets always stay private.
+      </p>
+      <button
+        type="button"
+        role="switch"
+        aria-checked={isPublic}
+        onClick={() => setPublic(!isPublic)}
+        className="flex items-center justify-between w-full cursor-pointer"
+      >
+        <span className="font-medium">Show me on the leaderboard</span>
+        <span
+          aria-hidden="true"
+          className="relative w-11 h-6 rounded-full bg-border shrink-0"
+        >
+          <span
+            className={clsx(
+              "absolute top-0.5 left-0.5 size-5 rounded-full shadow-sm transition-all",
+              isPublic ? "bg-brand translate-x-5" : "bg-muted"
+            )}
+          />
+        </span>
+      </button>
+    </section>
   );
 }
 

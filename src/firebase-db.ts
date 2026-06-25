@@ -2,6 +2,7 @@ import {
   collection,
   addDoc,
   doc,
+  setDoc,
   getDocs,
   query,
   orderBy,
@@ -69,6 +70,95 @@ export async function listMyItemsOnce() {
   );
   const snap = await getDocs(q);
   return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+}
+
+/**
+ * Public leaderboard slice for one user, stored at /leaderboard/{uid}.
+ * This is the only cross-user readable data — raw items/targets stay private.
+ */
+export type LeaderboardDoc = {
+  displayName: string;
+  photoURL: string | null;
+  firstDate: string; // earliest training day ("training since")
+  currentStreak: number;
+  longestStreak: number;
+  weekKey: string; // Monday of the week the weeklyTotal belongs to
+  weeklyTotal: Record<ExerciseType, number>;
+  exerciseBalance: Record<ExerciseType, number>;
+  bestSet: Record<ExerciseType, number>;
+  grandTotal: number;
+  updatedAt: Timestamp;
+};
+
+/** Owner-only preferences kept on the private /users/{uid} doc. */
+export type MyProfile = {
+  leaderboardPublic?: boolean;
+};
+
+/** Subscribe to the current user's own profile doc (for the visibility flag). */
+export function subscribeMyProfile(
+  cb: (profile: MyProfile | null) => void
+): () => void {
+  const uid = auth.currentUser?.uid;
+  if (!uid) {
+    cb(null);
+    return () => {};
+  }
+  return onSnapshot(doc(db, "users", uid), (snap) => {
+    cb(snap.exists() ? (snap.data() as MyProfile) : null);
+  });
+}
+
+/** Toggle whether the current user appears on the leaderboard. */
+export async function setMyLeaderboardVisibility(
+  isPublic: boolean
+): Promise<void> {
+  const uid = auth.currentUser?.uid;
+  if (!uid) throw new Error("Not authenticated");
+  await setDoc(
+    doc(db, "users", uid),
+    { leaderboardPublic: isPublic },
+    { merge: true }
+  );
+}
+
+/** Publish (upsert) the current user's public leaderboard slice. */
+export async function publishMyLeaderboardEntry(
+  data: Omit<LeaderboardDoc, "updatedAt">
+): Promise<void> {
+  const uid = auth.currentUser?.uid;
+  if (!uid) return;
+  await setDoc(
+    doc(db, "leaderboard", uid),
+    { ...data, updatedAt: serverTimestamp() },
+    { merge: true }
+  );
+}
+
+/** Remove the current user's public slice (when they go private). */
+export async function unpublishMyLeaderboardEntry(): Promise<void> {
+  const uid = auth.currentUser?.uid;
+  if (!uid) return;
+  await deleteDoc(doc(db, "leaderboard", uid));
+}
+
+/** Subscribe to the public leaderboard collection. */
+export function subscribeLeaderboard(
+  cb: (rows: (LeaderboardDoc & { uid: string })[]) => void,
+  onError?: (e: Error) => void
+): () => void {
+  return onSnapshot(
+    collection(db, "leaderboard"),
+    (snap) => {
+      cb(
+        snap.docs.map((d) => ({
+          uid: d.id,
+          ...(d.data() as LeaderboardDoc),
+        }))
+      );
+    },
+    onError
+  );
 }
 
 export function subscribeItems(cb: (items: SetRowDB[]) => void, date?: string) {

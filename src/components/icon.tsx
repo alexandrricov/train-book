@@ -17,7 +17,9 @@ export type IconName =
   | "close"
   | "plus"
   | "chart-bar"
-  | "chart-bar-fill";
+  | "chart-bar-fill"
+  | "trophy"
+  | "trophy-fill";
 
 type IconProps = React.SVGProps<SVGSVGElement> & {
   name: IconName;

@@ -6,9 +6,11 @@ import { Button } from "./components/action";
 import { signInWithPopup } from "firebase/auth";
 import { auth, db, googleProvider } from "./firebase";
 import { doc, serverTimestamp, setDoc } from "firebase/firestore";
+import { usePublishMyEntry } from "./pages/leaderboard/use-publish-entry";
 
 function App() {
   const { user, loading } = useAuth();
+  usePublishMyEntry();
 
   const login = async () => {
     const res = await signInWithPopup(auth, googleProvider);

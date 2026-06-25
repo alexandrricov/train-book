@@ -11,6 +11,11 @@ node_modules
 dist
 *.local
 
+# Claude local files (keep only shared config)
+.claude/*
+!.claude/CLAUDE.md
+!.claude/settings.json
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
