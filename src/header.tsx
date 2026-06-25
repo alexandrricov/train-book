@@ -65,7 +65,7 @@ export function Header() {
                 aria-current={ranksActive ? "page" : undefined}
                 className={ranksActive ? "text-on-accent" : ""}
               >
-                <Icon name={ranksActive ? "trophy-fill" : "trophy"} /> Ranks
+                <Icon name={ranksActive ? "crown-fill" : "crown"} /> Ranks
               </Link>
             </li>
             <li>
